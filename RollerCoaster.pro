@@ -13,8 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    rollercoasterview.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    rollercoasterview.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc

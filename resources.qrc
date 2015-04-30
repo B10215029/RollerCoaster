@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>rollercoasterview.frag</file>
+        <file>rollercoasterview.vert</file>
+    </qresource>
+</RCC>
