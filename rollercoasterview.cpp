@@ -13,6 +13,106 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 RollerCoasterView::~RollerCoasterView(){
 
 }
+void RollerCoasterView::initialize(){
+	initSceneManager();
+	initCamera();
+	initTrack();
+	initTrain();
+	initLight();
+	initTerrain();
+}
+
+void RollerCoasterView::initSceneManager(){
+
+}
+
+void RollerCoasterView::initCamera(){
+
+}
+
+void RollerCoasterView::initTrack(){
+
+}
+
+void RollerCoasterView::initTrain(){
+
+}
+
+void RollerCoasterView::initLight(){
+
+}
+
+void RollerCoasterView::initTerrain(){
+
+}
+
+void RollerCoasterView::drawTrack(){
+
+}
+
+void RollerCoasterView::drawSimpleTrack(){
+
+}
+
+void RollerCoasterView::drawRoadRails(){
+
+}
+
+void RollerCoasterView::drawParallelRails(){
+
+}
+
+void RollerCoasterView::planTrack(){
+
+}
+
+void RollerCoasterView::planLinear(){
+
+}
+
+void RollerCoasterView::planCardinal(){
+
+}
+
+void RollerCoasterView::planCubic(){
+
+}
+
+void RollerCoasterView::updateTrain(float deltatime){
+
+}
+
+float RollerCoasterView::getLastFPS(){
+	return 0;
+}
+
+void RollerCoasterView::mousePressEvent(QMouseEvent *event){
+	rotate=!rotate;
+}
+
+void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
+
+}
+
+void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
+
+}
+
+void RollerCoasterView::mouseDoubleClickEvent(QMouseEvent *event){
+
+}
+
+void RollerCoasterView::wheelEvent(QWheelEvent *event){
+
+}
+
+void RollerCoasterView::keyPressEvent(QKeyEvent *event){
+
+}
+
+void RollerCoasterView::keyReleaseEvent(QKeyEvent *event){
+
+}
 
 void RollerCoasterView::initializeGL(){
 	initializeOpenGLFunctions();
@@ -54,10 +154,6 @@ void RollerCoasterView::paintGL(){
 	this->update();
 }
 
-void RollerCoasterView::mousePressEvent(QMouseEvent *event){
-	rotate=!rotate;
-}
-
 GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fragmentFilePath){
 	GLuint program;
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
@@ -74,11 +170,15 @@ GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fr
 		VertexShaderCode=QString(VertexShaderFile.readAll()).toStdString();
 		VertexShaderFile.close();
 		vs_source = VertexShaderCode.c_str();
+#ifdef _DEBUG
 		printf("%s\n",vs_source);
+#endif /* DEBUG */
 	}
 	else{
+#ifdef _DEBUG
 		printf("Impossible to open %s. Are you in the right directory ?"
 			   "Don't forget to read the FAQ !\n", vertexFilePath);
+#endif /* DEBUG */
 		return 0;
 	}
 
@@ -88,20 +188,28 @@ GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fr
 		FragmentShaderCode=QString(FragmentShaderFile.readAll()).toStdString();
 		FragmentShaderFile.close();
 		fs_source = FragmentShaderCode.c_str();
+#ifdef _DEBUG
 		printf("%s\n",fs_source);
+#endif /* DEBUG */
 	}
 	else{
+#ifdef _DEBUG
 		printf("Impossible to open %s. Are you in the right directory ?"
 			"Don't forget to read the FAQ !\n", fragmentFilePath);
+#endif /* DEBUG */
 		return 0;
 	}
 
 	//compile vertex shader
+#ifdef _DEBUG
 	printf("Compiling shader : %s\n", vertexFilePath);
+#endif /* DEBUG */
 	glShaderSource(vs,1,&vs_source,NULL);
 	glCompileShader(vs);
 	// Compile Fragment Shader
+#ifdef _DEBUG
 	printf("Compiling shader : %s\n", fragmentFilePath);
+#endif /* DEBUG */
 	glShaderSource(fs, 1, &fs_source , NULL);
 	glCompileShader(fs);
 
@@ -128,7 +236,9 @@ GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fr
 #endif /* DEBUG */
 
 	// Link the program
+#ifdef _DEBUG
 	printf("Linking program\n");
+#endif /* DEBUG */
 	program = glCreateProgram();
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);

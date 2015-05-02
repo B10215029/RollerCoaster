@@ -14,10 +14,18 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    rollercoasterview.cpp
+    rollercoasterview.cpp \
+    Track.cpp \
+    ControlPoint.cpp \
+    model.cpp
 
 HEADERS  += mainwindow.h \
-    rollercoasterview.h
+    rollercoasterview.h \
+    Track.h \
+    ControlPoint.h \
+    vec3.h \
+    mat4.h \
+    model.h
 
 FORMS    += mainwindow.ui
 
