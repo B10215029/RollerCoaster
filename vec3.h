@@ -3,6 +3,9 @@
 // class vec3 -- a simple 3D vector class
 //
 /////////////////////////////////////////////////////////////////////////////
+#ifndef VEC3_H
+#define VEC3_H
+
 #include <cmath>
 class vec3
 {
@@ -11,22 +14,28 @@ public:
 	// Public representation: Not many options here.
 	float data[3];
 
-	float& x(){
+	inline float& x()
+	{
 		return data[0];
 	}
 
-	float& y(){
+	inline float& y()
+	{
 		return data[1];
 	}
 
-	float& z(){
+	inline float& z()
+	{
 		return data[2];
 	}
 
 	// Constructors
 	// Default constructor leaves vector in
 	// an indeterminate state
-	vec3() {}
+	vec3()
+	{
+		zero();
+	}
 
 	// Copy constructor
 	vec3(const vec3 &a)
@@ -138,7 +147,7 @@ public:
 	}
 
 	// Normalize the vector
-	void normalize()
+	vec3 normalize()
 	{
 		float magSq = data[0]*data[0] + data[1]*data[1] + data[2]*data[2];
 		if (magSq > 0.0f)
@@ -148,6 +157,7 @@ public:
 			data[1] *= oneOverMag;
 			data[2] *= oneOverMag;
 		}
+		return *this;
 	}
 
 	// Vector dot product. We overload the standard
@@ -199,3 +209,5 @@ inline float distance(const vec3 &a, const vec3 &b)
 	float dz = a.data[2] - b.data[2];
 	return sqrt(dx*dx + dy*dy + dz*dz);
 }
+
+#endif // VEC3_H

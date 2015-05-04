@@ -3,7 +3,11 @@
 // class mat4 -- a simple 3D vector class
 //
 /////////////////////////////////////////////////////////////////////////////
+#ifndef MAT4_H
+#define MAT4_H
+
 #include <cmath>
+#include "vec3.h"
 class mat4
 {
 public:
@@ -14,7 +18,16 @@ public:
 	// Constructors
 	// Default constructor leaves vector in
 	// an indeterminate state
-	inline mat4() {}
+	inline mat4()
+	{
+		zero();
+	}
+
+	inline mat4(const float a)
+	{
+		zero();
+		data[0] = data[5] = data[10] = data[15] = a;
+	}
 
 	// Copy constructor
 	inline mat4(const mat4 &a)
@@ -244,22 +257,22 @@ public:
 		return *this;
 	}
 
-	// Normalize the vector
-	inline void normalize()
-	{
-		float magSq = length();
-		if (magSq > 0.0f)
-		{ // check for divide-by-zero
-			float oneOverMag = 1.0f / magSq;
-			data[0] *= oneOverMag;
-			data[1] *= oneOverMag;
-			data[2] *= oneOverMag;
-		}
-	}
+//	// Normalize the vector
+//	inline void normalize()
+//	{
+//		float magSq = length();
+//		if (magSq > 0.0f)
+//		{ // check for divide-by-zero
+//			float oneOverMag = 1.0f / magSq;
+//			data[0] *= oneOverMag;
+//			data[1] *= oneOverMag;
+//			data[2] *= oneOverMag;
+//		}
+//	}
 
 	// Vector dot product. We overload the standard
 	// multiplication symbol to do this
-	inline float operator *(const mat4 &a) const
+	inline mat4 operator *(const mat4 &a) const
 	{
 		return mat4(data[0]*a.data[0] + data[1]*a.data[4] + data[2]*a.data[8] + data[3]*a.data[12],
 					data[0]*a.data[1] + data[1]*a.data[5] + data[2]*a.data[9] + data[3]*a.data[13],
@@ -279,13 +292,28 @@ public:
 					data[12]*a.data[3] + data[13]*a.data[7] + data[14]*a.data[11] + data[15]*a.data[15]);
 	}
 
-	inline float length() const
+	inline vec3 operator *(const vec3 &a) const
 	{
-		return sqrt(data[0]*data[0] + data[1]*data[1] + data[2]*data[2] + data[3]*data[3] +
-				data[4]*data[4] + data[5]*data[5] + data[6]*data[6] + data[7]*data[7] +
-				data[8]*data[8] + data[9]*data[9] + data[10]*data[10] + data[11]*data[11] +
-				data[12]*data[12] + data[13]*data[13] + data[14]*data[14] + data[15]*data[15]);
+		return vec3(data[0]*a.data[0] + data[1]*a.data[1] + data[2]*a.data[2] + data[3],
+					data[4]*a.data[0] + data[5]*a.data[1] + data[6]*a.data[2] + data[7],
+					data[8]*a.data[0] + data[9]*a.data[1] + data[10]*a.data[2] + data[11]);
 	}
+
+	inline mat4 trans() const
+	{
+		return mat4(data[0], data[4], data[8], data[12],
+					data[1], data[5], data[9], data[13],
+					data[2], data[6], data[10], data[14],
+					data[3], data[7], data[11], data[15]);
+	}
+
+//	inline float length() const
+//	{
+//		return sqrt(data[0]*data[0] + data[1]*data[1] + data[2]*data[2] + data[3]*data[3] +
+//				data[4]*data[4] + data[5]*data[5] + data[6]*data[6] + data[7]*data[7] +
+//				data[8]*data[8] + data[9]*data[9] + data[10]*data[10] + data[11]*data[11] +
+//				data[12]*data[12] + data[13]*data[13] + data[14]*data[14] + data[15]*data[15]);
+//	}
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -300,8 +328,10 @@ inline mat4 operator *(float k, const mat4 &m)
 	return m*k;
 }
 
-// Compute the distance between two points
-inline float distance(const mat4 &a, const mat4 &b)
-{
-	return (a-b).length();
-}
+//// Compute the distance between two points
+//inline float distance(const mat4 &a, const mat4 &b)
+//{
+//	return (a-b).length();
+//}
+
+#endif // MAT4_H

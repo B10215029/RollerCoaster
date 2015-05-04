@@ -6,6 +6,12 @@
 #include <QImage>
 #include "vec3.h"
 
+typedef struct{
+	int v;
+	int vt;
+	int vn;
+}faceData;
+
 class Model
 {
 public:
@@ -17,14 +23,16 @@ public:
 	QVector<vec3> vertices;
 	QVector<vec3> uvs;
 	QVector<vec3> normals;
-	QVector<QVector<int[3]>> faces;
+	QVector<QVector<faceData>> faces;
 	QVector<int> faceMaterial;
 	QMap<QString, int> materialName;
-	QVector<float[3]> Kds;
-	QVector<float[3]> Kas;
-	QVector<float[3]> Kss;
+	QVector<vec3> Kds;
+	QVector<vec3> Kas;
+	QVector<vec3> Kss;
 	QVector<float> Nss;
 	QVector<QImage> textures;
+	//QVector<QVector<int>> materialFace;
+
 };
 
 #endif // MODEL_H

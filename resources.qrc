@@ -2,5 +2,7 @@
     <qresource prefix="/shaders">
         <file>rollercoasterview.frag</file>
         <file>rollercoasterview.vert</file>
+        <file>main.frag</file>
+        <file>main.vert</file>
     </qresource>
 </RCC>

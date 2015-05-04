@@ -17,7 +17,9 @@ SOURCES += main.cpp\
     rollercoasterview.cpp \
     Track.cpp \
     ControlPoint.cpp \
-    model.cpp
+    model.cpp \
+    gameobject.cpp \
+    camera.cpp
 
 HEADERS  += mainwindow.h \
     rollercoasterview.h \
@@ -25,7 +27,9 @@ HEADERS  += mainwindow.h \
     ControlPoint.h \
     vec3.h \
     mat4.h \
-    model.h
+    model.h \
+    gameobject.h \
+    camera.h
 
 FORMS    += mainwindow.ui
 

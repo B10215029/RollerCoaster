@@ -1,17 +1,12 @@
 #ifndef TRACK_H
 #define TRACK_H
 
-//#include <OgreSceneManager.h>
-//#include <OgreSceneNode.h>
-//#include <OgreEntity.h>
-//#include <vector>
 #include <QVector>
 
 // make use of other data structures from this project
 #include "ControlPoint.h"
 
 // Control Point Vector
-typedef std::vector<ControlPoint> CPV; 
 
 class Track {
 	public:		
