@@ -16,7 +16,7 @@ GameObject::GameObject()
 	name = "GameObject";
 	position = vec3(0, 0, 0);
 	rotation = vec3(0, 0, 0);
-	scale = vec3(0, 0, 0);
+	scale = vec3(1, 1, 1);
 	model = NULL;
 	parent = NULL;
 	children.clear();
@@ -65,4 +65,8 @@ mat4 GameObject::rotateMat(){
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	return rx*ry*rz;
+}
+
+mat4 GameObject::modelMat(){
+	return translateMat() * scaleMat() * rotateMat();
 }

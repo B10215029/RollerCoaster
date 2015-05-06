@@ -12,7 +12,7 @@ public:
 	~Camera();
 	mat4 perspective();
 	mat4 frustum();
-	mat4 lookAt();
+	mat4 lookAt(vec3 center, vec3 up);
 	bool isPerspective;
 	float fov;
 	float aspect;

@@ -17,6 +17,7 @@ public:
 	mat4 translateMat();
 	mat4 scaleMat();
 	mat4 rotateMat();
+	mat4 modelMat();
 	QString name;
 	vec3 position;
 	vec3 rotation;

@@ -9,10 +9,9 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldCamera = Camera();
 	worldLight = Camera();
 	mainCamera = &worldCamera;
+	mainLight = &worldLight;
 	testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
 
-	t=0;
-	rotate=true;
 }
 
 RollerCoasterView::~RollerCoasterView(){
@@ -59,6 +58,7 @@ void RollerCoasterView::initializeGL(){
 	initializeOpenGLFunctions();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -79,8 +79,8 @@ void RollerCoasterView::initializeGL(){
 		vertArray[i*9+7] = testm.vertices[testm.faces[i][2].v].y();
 		vertArray[i*9+8] = testm.vertices[testm.faces[i][2].v].z();
 	}
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertArray), vertArray, GL_STATIC_DRAW);
-	delete[] vertArray;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces.size()*3*3, vertArray, GL_STATIC_DRAW);
+	//delete[] vertArray;
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
 	float *normArray=new float[testm.faces.size()*3*3];
 	for(int i=0;i<testm.faces.size();++i){
@@ -94,21 +94,21 @@ void RollerCoasterView::initializeGL(){
 		normArray[i*9+7] = testm.normals[testm.faces[i][2].vn].y();
 		normArray[i*9+8] = testm.normals[testm.faces[i][2].vn].z();
 	}
-	glBufferData(GL_ARRAY_BUFFER, sizeof(normArray), normArray, GL_STATIC_DRAW);
-	delete[] normArray;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces.size()*3*3, normArray, GL_STATIC_DRAW);
+	//delete[] normArray;
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	mainProgram = loadShaders(":/shaders/main.vert",":/shaders/main.frag");
 	glUseProgram(mainProgram);
-	glGetUniformLocation(uMainModelMatrix, "modelMatrix");
-	glGetUniformLocation(uMainViewMatrix, "viewMatrix");
-	glGetUniformLocation(uMainProjectionMatrix, "projectionMatrix");
-	glGetUniformLocation(uMainLightPosition, "lightPosition");
-	glGetUniformLocation(uMainEyePosition, "eyePosition");
-	glGetUniformLocation(uMainKa, "Ka");
-	glGetUniformLocation(uMainKd, "Kd");
-	glGetUniformLocation(uMainKs, "Ks");
-	glGetUniformLocation(uMainNs, "Ns");
+	uMainModelMatrix = glGetUniformLocation(mainProgram, "modelMatrix");
+	uMainViewMatrix = glGetUniformLocation(mainProgram, "viewMatrix");
+	uMainProjectionMatrix = glGetUniformLocation(mainProgram, "projectionMatrix");
+	uMainLightPosition = glGetUniformLocation(mainProgram, "lightPosition");
+	uMainEyePosition = glGetUniformLocation(mainProgram, "eyePosition");
+	uMainKa = glGetUniformLocation(mainProgram, "Ka");
+	uMainKd = glGetUniformLocation(mainProgram, "Kd");
+	uMainKs = glGetUniformLocation(mainProgram, "Ks");
+	uMainNs = glGetUniformLocation(mainProgram, "Ns");
 
 	glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
 	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -118,29 +118,45 @@ void RollerCoasterView::initializeGL(){
 	glEnableVertexAttribArray(vNormal);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	
 }
 
 void RollerCoasterView::resizeGL(int w, int h){
 	width = w;
 	height = h;
 	glViewport(0,0,w,h);
+	worldCamera.position = vec3(0, 10, 25);
+	worldCamera.fov = 80;
+	worldCamera.aspect = (float)width/height;
+	worldCamera.znear = 0.1f;
+	worldCamera.zfar = 100;
+	worldLight.position = vec3(40.0f, 40.0f, 40.0f);
 }
 
 void RollerCoasterView::paintGL(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	glUniformMatrix4fv(uMainModelMatrix, 1, GL_FALSE, NULL);
-	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, NULL);
-	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, NULL);
-	glUniform3fv(uMainLightPosition, 1 , NULL);
-	glUniform3fv(uMainEyePosition, 1 , NULL);
+	glUniformMatrix4fv(uMainModelMatrix, 1, GL_FALSE, mat4(1).data);
+	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->lookAt(vec3(0,0,0),vec3(0,1,0)).data);
+	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->perspective().data);
+	glUniform3fv(uMainLightPosition, 1 , mainLight->position.data);
+	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
 	glUniform3fv(uMainKa, 1 , testm.Kas[0].data);
 	glUniform3fv(uMainKd, 1 , testm.Kds[0].data);
 	glUniform3fv(uMainKs, 1 , testm.Kss[0].data);
 	glUniform1f(uMainNs, testm.Nss[0]);
 
-	glDrawArrays(GL_TRIANGLES, 0, testm.faces.size());
+//	glUseProgram(mainProgram);
+//	glBindVertexArray(VAOs[trang]);
+
+//	glEnableVertexAttribArray(vPosition);
+//	glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+//	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+//	glEnableVertexAttribArray(vNormal);
+//	glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+//	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+	glDrawArrays(GL_TRIANGLES, 0, testm.faces.size()*3);
 	//this->update();
 }
 

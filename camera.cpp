@@ -30,8 +30,8 @@ mat4 Camera::perspective(){
 	result.data[0] = (2.0 * znear) / (right - left);
 	result.data[5] = (2.0 * znear) / (top - bottom);
 	result.data[10] = -(zfar + znear) / (zfar - znear);
-	result.data[11] = -(2.0 * zfar * znear) / (zfar - znear);
-	result.data[14] = -1;
+	result.data[11] = -1;
+	result.data[14] = -(2.0 * zfar * znear) / (zfar - znear);
 	return result;
 }
 
@@ -47,24 +47,45 @@ mat4 Camera::frustum(){
 	return result;
 }
 
-mat4 Camera::lookAt(){
-	mat4 rm = rotateMat();
-	vec3 f = rm*vec3(0, 0, -1);
-	vec3 u = rm*vec3(0, 1, 0);
+mat4 Camera::lookAt(vec3 center, vec3 up){
+	vec3 f = (center - position).normalize();
+	vec3 u = up.normalize();
 	vec3 s = crossProduct(f, u).normalize();
 	u = crossProduct(s, f);
 	mat4 result(1);
 	result.data[0] = s.x();
-	result.data[1] = s.y();
-	result.data[2] = s.z();
-	result.data[4] = u.x();
+	result.data[4] = s.y();
+	result.data[8] = s.z();
+	result.data[1] = u.x();
 	result.data[5] = u.y();
-	result.data[6] = u.z();
-	result.data[8] =-f.x();
-	result.data[9] =-f.y();
+	result.data[9] = u.z();
+	result.data[2] =-f.x();
+	result.data[6] =-f.y();
 	result.data[10] =-f.z();
-	result.data[3] =-(s*position);
-	result.data[7] =-(u*position);
-	result.data[11] = (f*position);
+	result.data[12] =-(s*position);
+	result.data[13] =-(u*position);
+	result.data[14] = (f*position);
 	return result;
 }
+
+//mat4 Camera::lookAt(){
+//	mat4 rm = rotateMat();
+//	vec3 f = rm*vec3(0, 0, -1);
+//	vec3 u = rm*vec3(0, 1, 0);
+//	vec3 s = crossProduct(f, u).normalize();
+//	u = crossProduct(s, f);
+//	mat4 result(1);
+//	result.data[0] = s.x();
+//	result.data[1] = s.y();
+//	result.data[2] = s.z();
+//	result.data[4] = u.x();
+//	result.data[5] = u.y();
+//	result.data[6] = u.z();
+//	result.data[8] =-f.x();
+//	result.data[9] =-f.y();
+//	result.data[10] =-f.z();
+//	result.data[3] =-(s*position);
+//	result.data[7] =-(u*position);
+//	result.data[11] = (f*position);
+//	return result;
+//}
