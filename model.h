@@ -10,7 +10,15 @@ typedef struct{
 	int v;
 	int vt;
 	int vn;
-}faceData;
+}face;
+
+typedef struct{
+	vec3 Kd;
+	vec3 Ka;
+	vec3 Ks;
+	int Ns;
+	QImage texture;
+}material;
 
 class Model
 {
@@ -19,18 +27,18 @@ public:
 	Model(const char* filePath);
 	~Model();
 	void loadOBJ(const char* filePath);
-	void loadMTL(const QString name, const QString filePath);
+	void loadMTL(const QString fileName, const QString filePath);
+	void update();
 	QVector<vec3> vertices;
 	QVector<vec3> uvs;
 	QVector<vec3> normals;
-	QVector<QVector<faceData>> faces;
-	QVector<int> faceMaterial;
+	QVector<QVector<QVector<face>>> faces;
 	QMap<QString, int> materialName;
-	QVector<vec3> Kds;
-	QVector<vec3> Kas;
-	QVector<vec3> Kss;
-	QVector<float> Nss;
-	QVector<QImage> textures;
+	QVector<material> materials;
+
+	QVector<float*> mtlFV;
+	QVector<float*> mtlFT;
+	QVector<float*> mtlFN;
 	//QVector<QVector<int>> materialFace;
 
 };

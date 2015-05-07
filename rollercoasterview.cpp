@@ -58,7 +58,7 @@ void RollerCoasterView::initializeGL(){
 	initializeOpenGLFunctions();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	//glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
@@ -66,37 +66,6 @@ void RollerCoasterView::initializeGL(){
 	glBindVertexArray(VAOs[trang]);
 
 	glGenBuffers(NumBuffers, Buffers);
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-	float *vertArray=new float[testm.faces.size()*3*3];
-	for(int i=0;i<testm.faces.size();++i){
-		vertArray[i*9+0] = testm.vertices[testm.faces[i][0].v].x();
-		vertArray[i*9+1] = testm.vertices[testm.faces[i][0].v].y();
-		vertArray[i*9+2] = testm.vertices[testm.faces[i][0].v].z();
-		vertArray[i*9+3] = testm.vertices[testm.faces[i][1].v].x();
-		vertArray[i*9+4] = testm.vertices[testm.faces[i][1].v].y();
-		vertArray[i*9+5] = testm.vertices[testm.faces[i][1].v].z();
-		vertArray[i*9+6] = testm.vertices[testm.faces[i][2].v].x();
-		vertArray[i*9+7] = testm.vertices[testm.faces[i][2].v].y();
-		vertArray[i*9+8] = testm.vertices[testm.faces[i][2].v].z();
-	}
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces.size()*3*3, vertArray, GL_STATIC_DRAW);
-	//delete[] vertArray;
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-	float *normArray=new float[testm.faces.size()*3*3];
-	for(int i=0;i<testm.faces.size();++i){
-		normArray[i*9+0] = testm.normals[testm.faces[i][0].vn].x();
-		normArray[i*9+1] = testm.normals[testm.faces[i][0].vn].y();
-		normArray[i*9+2] = testm.normals[testm.faces[i][0].vn].z();
-		normArray[i*9+3] = testm.normals[testm.faces[i][1].vn].x();
-		normArray[i*9+4] = testm.normals[testm.faces[i][1].vn].y();
-		normArray[i*9+5] = testm.normals[testm.faces[i][1].vn].z();
-		normArray[i*9+6] = testm.normals[testm.faces[i][2].vn].x();
-		normArray[i*9+7] = testm.normals[testm.faces[i][2].vn].y();
-		normArray[i*9+8] = testm.normals[testm.faces[i][2].vn].z();
-	}
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces.size()*3*3, normArray, GL_STATIC_DRAW);
-	//delete[] normArray;
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	mainProgram = loadShaders(":/shaders/main.vert",":/shaders/main.frag");
 	glUseProgram(mainProgram);
@@ -110,13 +79,9 @@ void RollerCoasterView::initializeGL(){
 	uMainKs = glGetUniformLocation(mainProgram, "Ks");
 	uMainNs = glGetUniformLocation(mainProgram, "Ns");
 
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(vPosition);
-	glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(vUV);
 	glEnableVertexAttribArray(vNormal);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
 
@@ -124,7 +89,7 @@ void RollerCoasterView::resizeGL(int w, int h){
 	width = w;
 	height = h;
 	glViewport(0,0,w,h);
-	worldCamera.position = vec3(0, 10, 25);
+	worldCamera.position = vec3(0, 50, 50);
 	worldCamera.fov = 80;
 	worldCamera.aspect = (float)width/height;
 	worldCamera.znear = 0.1f;
@@ -136,27 +101,42 @@ void RollerCoasterView::paintGL(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glUniformMatrix4fv(uMainModelMatrix, 1, GL_FALSE, mat4(1).data);
-	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->lookAt(vec3(0,0,0),vec3(0,1,0)).data);
+	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->lookAt(vec3(0,50,0),vec3(0,1,0)).data);
 	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->perspective().data);
 	glUniform3fv(uMainLightPosition, 1 , mainLight->position.data);
 	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
-	glUniform3fv(uMainKa, 1 , testm.Kas[0].data);
-	glUniform3fv(uMainKd, 1 , testm.Kds[0].data);
-	glUniform3fv(uMainKs, 1 , testm.Kss[0].data);
-	glUniform1f(uMainNs, testm.Nss[0]);
 
-//	glUseProgram(mainProgram);
-//	glBindVertexArray(VAOs[trang]);
 
-//	glEnableVertexAttribArray(vPosition);
-//	glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-//	glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	for(int i=0;i<testm.materials.size();++i){
+		glUniform3fv(uMainKa, 1 , testm.materials[i].Ka.data);
+		glUniform3fv(uMainKd, 1 , testm.materials[i].Kd.data);
+		glUniform3fv(uMainKs, 1 , testm.materials[i].Ks.data);
+		glUniform1f(uMainNs, testm.materials[i].Ns);
 
-//	glEnableVertexAttribArray(vNormal);
-//	glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-//	glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+//		glVertexAttribPointer自動偵測陣列大小錯誤(sizeof(float*)=4)
+//		不知如何直接指定glVertexAttribPointer大小只好先丟到VBO指定大小
+//		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFV[i]);
+//		glVertexAttribPointer(vUV, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFT[i]);
+//		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFN[i]);
 
-	glDrawArrays(GL_TRIANGLES, 0, testm.faces.size()*3);
+		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*3, testm.mtlFV[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*2, testm.mtlFT[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*3, testm.mtlFN[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glDrawArrays(GL_TRIANGLES, 0, testm.faces[i].size()*3);
+
+	}
+
+
+
+
 	//this->update();
 }
 
