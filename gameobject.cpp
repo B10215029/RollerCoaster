@@ -27,6 +27,16 @@ GameObject::~GameObject()
 
 }
 
+GameObject GameObject::operator+(const GameObject &a) const{
+	GameObject r;
+	r.position = position + a.position;
+	r.rotation = rotation + a.rotation;
+	r.scale.data[0] = scale.data[0] * a.scale.data[0];
+	r.scale.data[1] = scale.data[1] * a.scale.data[1];
+	r.scale.data[2] = scale.data[2] * a.scale.data[2];
+	return r;
+}
+
 void GameObject::setParent(GameObject* p){
 	parent = p;
 	p->children.push_back(this);
@@ -38,10 +48,10 @@ void GameObject::setChild(GameObject* c){
 }
 
 mat4 GameObject::translateMat(){
-	return mat4(1, 0, 0, position.x(),
-				0, 1, 0, position.y(),
-				0, 0, 1, position.z(),
-				0, 0, 0, 1);
+	return mat4(1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				position.x(), position.y(), position.z(), 1);
 }
 
 mat4 GameObject::scaleMat(){
@@ -56,12 +66,12 @@ mat4 GameObject::rotateMat(){
 			0, cos(RADIAN(rotation.x())), -sin(RADIAN(rotation.x())), 0,
 			0, sin(RADIAN(rotation.x())), cos(RADIAN(rotation.x())), 0,
 			0, 0, 0, 1);
-	mat4 ry(cos(RADIAN(rotation.x())), 0, sin(RADIAN(rotation.x())), 0,
+	mat4 ry(cos(RADIAN(rotation.y())), 0, sin(RADIAN(rotation.y())), 0,
 			0, 1, 0, 0,
-			-sin(RADIAN(rotation.x())), 0, cos(RADIAN(rotation.x())), 0,
+			-sin(RADIAN(rotation.y())), 0, cos(RADIAN(rotation.y())), 0,
 			0, 0, 0, 1);
-	mat4 rz(cos(RADIAN(rotation.x())), -sin(RADIAN(rotation.x())), 0, 0,
-			sin(RADIAN(rotation.x())), cos(RADIAN(rotation.x())), 0, 0,
+	mat4 rz(cos(RADIAN(rotation.z())), -sin(RADIAN(rotation.z())), 0, 0,
+			sin(RADIAN(rotation.z())), cos(RADIAN(rotation.z())), 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
 	return rx*ry*rz;
@@ -69,4 +79,10 @@ mat4 GameObject::rotateMat(){
 
 mat4 GameObject::modelMat(){
 	return translateMat() * scaleMat() * rotateMat();
+}
+
+void GameObject::animation(float t){
+	rotation.y()++;
+	//rotation.data[1]=t;
+	//rotation=vec3(0,0,t);
 }

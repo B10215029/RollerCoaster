@@ -13,6 +13,7 @@ public:
 	mat4 perspective();
 	mat4 frustum();
 	mat4 lookAt(vec3 center, vec3 up);
+	mat4 view();
 	bool isPerspective;
 	float fov;
 	float aspect;

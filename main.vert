@@ -1,6 +1,6 @@
 #version 430
 layout(location = 0) in vec3 vPosition;
-//layout(location = 1) in vec2 vUV;
+layout(location = 1) in vec2 vUV;
 layout(location = 2) in vec3 vNormal;
 
 uniform mat4 modelMatrix;
@@ -10,7 +10,7 @@ uniform mat4 projectionMatrix;
 //uniform mat4 shadowMatrix;
 
 out vec3 pPosition;
-//out vec2 pUV;
+out vec2 pUV;
 out vec3 pNormal;
 //out vec3 pLightDirection;
 //out vec4 pShadowCoord;
@@ -22,8 +22,8 @@ void main(void) {
 	//vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 	//pPosition = -vPosition3;
 	pPosition = vPosition;
-	//pUV = vUV;
-	pNormal = mat3(modelView) * vNormal;
+	pUV = vUV;
+	pNormal = normalize(mat3(modelView) * vNormal);
 	//pLightDirection = normalize(lightPosition - vPosition3);
 	//pShadowCoord = shadowMatrix * vec4(vPosition, 1);
 	gl_Position = MVP * vec4(vPosition, 1);

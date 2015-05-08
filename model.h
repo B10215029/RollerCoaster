@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QImage>
 #include "vec3.h"
+#include "texturedb.h"
 
 typedef struct{
 	int v;
@@ -17,7 +18,7 @@ typedef struct{
 	vec3 Ka;
 	vec3 Ks;
 	int Ns;
-	QImage texture;
+	int texture;
 }material;
 
 class Model
@@ -39,7 +40,6 @@ public:
 	QVector<float*> mtlFV;
 	QVector<float*> mtlFT;
 	QVector<float*> mtlFN;
-	//QVector<QVector<int>> materialFace;
 
 };
 

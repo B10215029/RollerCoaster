@@ -6,28 +6,28 @@
 #include <string>
 
 RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
+	TextureDB::init();
 	worldCamera = Camera();
 	worldLight = Camera();
 	mainCamera = &worldCamera;
 	mainLight = &worldLight;
-	testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
-
+	a.model = &testm;
+	b.model = a.model;
+	a.scale=vec3(5.2,5.2,5.2);
+	b.position=vec3(0,300,50);
+	//a.setChild(&b);
+	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
+	//testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
+	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
+	frameNumber = 0;
 }
 
 RollerCoasterView::~RollerCoasterView(){
 
 }
 
-void drawGameObject(GameObject& o, vec3 worldPos, vec3 worldRot, vec3 worldSca){
-
-}
-
-float RollerCoasterView::getLastFPS(){
-	return 0;
-}
-
 void RollerCoasterView::mousePressEvent(QMouseEvent *event){
-	rotate=!rotate;
+
 }
 
 void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
@@ -60,7 +60,7 @@ void RollerCoasterView::initializeGL(){
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClearColor(0.5, 0.5, 1.0, 1.0);
 
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[trang]);
@@ -78,66 +78,98 @@ void RollerCoasterView::initializeGL(){
 	uMainKd = glGetUniformLocation(mainProgram, "Kd");
 	uMainKs = glGetUniformLocation(mainProgram, "Ks");
 	uMainNs = glGetUniformLocation(mainProgram, "Ns");
+	uMainUseTexture = glGetUniformLocation(mainProgram, "useTexture");
 
 	glEnableVertexAttribArray(vPosition);
 	glEnableVertexAttribArray(vUV);
 	glEnableVertexAttribArray(vNormal);
 
+	for(int i=0;i<TextureDB::ID.size();++i){
+		glGenTextures(1, &TextureDB::ID[i]);
+		glBindTexture(GL_TEXTURE_2D, TextureDB::ID[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TextureDB::image[i].width(), TextureDB::image[i].height(), 0, GL_RGB, GL_UNSIGNED_BYTE, TextureDB::image[i].bits());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void RollerCoasterView::resizeGL(int w, int h){
 	width = w;
 	height = h;
 	glViewport(0,0,w,h);
-	worldCamera.position = vec3(0, 50, 50);
+//	worldCamera.position = vec3(0, 50, 50);
+//	worldCamera.rotation = vec3(-45,0,0);
+	worldCamera.position = vec3(0, 30, 20);
+	worldCamera.rotation = vec3(0,0,0);
 	worldCamera.fov = 80;
 	worldCamera.aspect = (float)width/height;
 	worldCamera.znear = 0.1f;
 	worldCamera.zfar = 100;
-	worldLight.position = vec3(40.0f, 40.0f, 40.0f);
+	worldLight.position = vec3(20.0f, 20.0f, 20.0f);
 }
 
 void RollerCoasterView::paintGL(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glUniformMatrix4fv(uMainModelMatrix, 1, GL_FALSE, mat4(1).data);
-	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->lookAt(vec3(0,50,0),vec3(0,1,0)).data);
+	//a.scale=vec3(5.5,5.5,5.5);
+	a.scale=vec3(10,10,10);
+	//a.scale=vec3(0.5,0.5,0.5);
+	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
 	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->perspective().data);
 	glUniform3fv(uMainLightPosition, 1 , mainLight->position.data);
 	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
 
 
-	for(int i=0;i<testm.materials.size();++i){
-		glUniform3fv(uMainKa, 1 , testm.materials[i].Ka.data);
-		glUniform3fv(uMainKd, 1 , testm.materials[i].Kd.data);
-		glUniform3fv(uMainKs, 1 , testm.materials[i].Ks.data);
-		glUniform1f(uMainNs, testm.materials[i].Ns);
 
-//		glVertexAttribPointer自動偵測陣列大小錯誤(sizeof(float*)=4)
-//		不知如何直接指定glVertexAttribPointer大小只好先丟到VBO指定大小
-//		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFV[i]);
-//		glVertexAttribPointer(vUV, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFT[i]);
-//		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)testm.mtlFN[i]);
+	drawGameObject(a);
 
-		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*3, testm.mtlFV[i], GL_STATIC_DRAW);
-		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*2, testm.mtlFT[i], GL_STATIC_DRAW);
-		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*testm.faces[i].size()*3*3, testm.mtlFN[i], GL_STATIC_DRAW);
-		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glDrawArrays(GL_TRIANGLES, 0, testm.faces[i].size()*3);
+	frameNumber++;
 
+	emit getLastFPS(QString("FPS:%1 --FN:%2").arg(int(1000./(elapsedTime.elapsed()))).arg(frameNumber));
+	elapsedTime.restart();
+	this->update();
+}
+
+void RollerCoasterView::drawGameObject(GameObject& o, GameObject& p){
+	if(o.model){
+		glUniformMatrix4fv(uMainModelMatrix, 1, GL_FALSE, (o.modelMat()*p.modelMat()).data);
+
+		for(int i=0;i<o.model->materials.size();++i){
+			glUniform3fv(uMainKa, 1 , o.model->materials[i].Ka.data);
+			glUniform3fv(uMainKd, 1 , o.model->materials[i].Kd.data);
+			glUniform3fv(uMainKs, 1 , o.model->materials[i].Ks.data);
+			glUniform1f(uMainNs, o.model->materials[i].Ns);
+			glUniform1i(uMainUseTexture, o.model->materials[i].texture);
+
+			if(o.model->materials[i].texture != -1)
+				glBindTexture(GL_TEXTURE_2D, TextureDB::ID[o.model->materials[i].texture]);
+
+//			glVertexAttribPointer自動偵測陣列大小錯誤(sizeof(float*)=4)
+//			不知如何直接指定glVertexAttribPointer大小只好先丟到VBO指定大小
+//			glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, o.model->mtlFV[i]);
+//			glVertexAttribPointer(vUV, 3, GL_FLOAT, GL_FALSE, 0, o.model->mtlFT[i]);
+//			glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, o.model->mtlFN[i]);
+
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*o.model->faces[i].size()*3*3, o.model->mtlFV[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*o.model->faces[i].size()*3*2, o.model->mtlFT[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*o.model->faces[i].size()*3*3, o.model->mtlFN[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			glDrawArrays(GL_TRIANGLES, 0, o.model->faces[i].size()*3);
+			//glBindTexture(GL_TEXTURE_2D, 0);
+
+		}
 	}
-
-
-
-
-	//this->update();
+	for(int i=0;i<o.children.size();++i)
+		drawGameObject(*o.children[i], p+o);
+	o.animation(frameNumber);
 }
 
 GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fragmentFilePath){

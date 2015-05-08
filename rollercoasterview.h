@@ -3,6 +3,8 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_4_3_Core>
+#include <QTime>
+#include <QStatusBar>
 #include "gameobject.h"
 #include "camera.h"
 #include "Track.h"
@@ -10,6 +12,8 @@
 
 class RollerCoasterView : public QOpenGLWidget, protected QOpenGLFunctions_4_3_Core
 {
+	Q_OBJECT
+
 public:
 	RollerCoasterView(QWidget *parent);
 	~RollerCoasterView();
@@ -19,8 +23,8 @@ public:
 //	void planTrack();
 
 //	void updateTrain(float deltatime);
-
-	float getLastFPS();
+signals:
+	void getLastFPS(QString);
 
 protected:
 //	//initialize
@@ -38,7 +42,7 @@ protected:
 //	void planLinear();
 //	void planCardinal();
 //	void planCubic();
-	void drawGameObject(GameObject& o, vec3 worldPos = vec3(), vec3 worldRot = vec3(), vec3 worldSca = vec3());
+	void drawGameObject(GameObject &o, GameObject &p=GameObject());
 
 	//Event
 	void mousePressEvent(QMouseEvent *event);
@@ -87,10 +91,16 @@ public:
 	Camera worldCamera;
 	Camera worldLight;
 	Model testm;
+	GameObject a;
+	GameObject b;
+	GameObject root;
 
 protected:
 
 private:
+	QTime elapsedTime;
+	unsigned int frameNumber;
+
 
 	//OpenGL
 	int width;
@@ -102,6 +112,7 @@ private:
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
+	GLuint Textures[1];
 
 	GLuint mainProgram;
 	GLuint uMainModelMatrix;
@@ -113,13 +124,13 @@ private:
 	GLuint uMainKd;
 	GLuint uMainKs;
 	GLuint uMainNs;
+	GLuint uMainTex;
+	GLuint uMainUseTexture;
 
 
-	GLuint program;
-	GLfloat v[2];
-	int t;
-	bool rotate;
-	GLuint offsetMatrix;
+
+
+
 };
 
 #endif // ROLLERCOASTERVIEW_H

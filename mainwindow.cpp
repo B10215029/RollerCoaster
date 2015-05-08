@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+	//connect(ui->openGLWidget, SIGNAL(getLastFPS(QString)), ui->statusBar, SLOT(showMessage(QString)));
+	connect(ui->openGLWidget, SIGNAL(getLastFPS(QString)), ui->label, SLOT(setText(QString)));
 }
 
 MainWindow::~MainWindow()

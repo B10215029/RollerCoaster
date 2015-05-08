@@ -6,14 +6,17 @@
 #include "vec3.h"
 #include "mat4.h"
 #include "model.h"
+#include "texturedb.h"
 
 class GameObject
 {
 public:
 	GameObject();
 	~GameObject();
+	GameObject operator+(const GameObject &a) const;
 	void setParent(GameObject* p);
 	void setChild(GameObject* c);
+	void animation(float t);
 	mat4 translateMat();
 	mat4 scaleMat();
 	mat4 rotateMat();
