@@ -18,30 +18,10 @@ public:
 	RollerCoasterView(QWidget *parent);
 	~RollerCoasterView();
 
-//	void initialize();
-//	void drawTrack();
-//	void planTrack();
-
-//	void updateTrain(float deltatime);
 signals:
 	void getLastFPS(QString);
 
 protected:
-//	//initialize
-//	void initSceneManager();
-//	void initCamera();
-//	void initTrack();
-//	void initTrain();
-//	void initLight();
-//	void initTerrain();
-
-//	void drawSimpleTrack();
-//	void drawRoadRails();
-//	void drawParallelRails();
-
-//	void planLinear();
-//	void planCardinal();
-//	void planCubic();
 	void drawGameObject(GameObject &o, GameObject &p=GameObject());
 
 	//Event
@@ -62,29 +42,12 @@ private:
 
 //variable
 public:
-//	//enum
-//	enum {eWorld, eTop, eTrain};
-//	enum {eLinear, eCardinal, eCubic};
-//	enum {eLine, eTrack ,eRoad};
-
-//	//Flag
-//	bool playFlag;
-//	bool arcLengthFlag;
-//	bool shadowFlag;
-//	bool lightingFlag;
-//	bool driverFlag;
-//	bool peopleFlag;
-//	int cameraType;
-//	int curveType;
-//	int trainType;
+	GLuint depth_texture;
+	GLuint depth_fbo;
+	GLuint render_light_prog;
+	GLuint uMVPMatrix;
 
 
-//	//argument
-//	float speed;
-
-//	//Data
-//	vec3 trainPosition;
-//	vec3 cameraPosition;
 
 	Camera* mainCamera;
 	Camera* mainLight;
@@ -109,10 +72,10 @@ private:
 	enum {trang, NumVAOs};
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
+	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
-	GLuint Textures[1];
 
 	GLuint mainProgram;
 	GLuint uMainModelMatrix;
@@ -126,6 +89,7 @@ private:
 	GLuint uMainNs;
 	GLuint uMainTex;
 	GLuint uMainUseTexture;
+	GLuint uMainShadowMatrix;
 
 
 

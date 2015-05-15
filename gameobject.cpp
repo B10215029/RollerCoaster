@@ -38,13 +38,37 @@ GameObject GameObject::operator+(const GameObject &a) const{
 }
 
 void GameObject::setParent(GameObject* p){
+	deleteParent();
 	parent = p;
 	p->children.push_back(this);
 }
 
 void GameObject::setChild(GameObject* c){
+	c->deleteParent();
 	children.push_back(c);
 	c->parent = this;
+}
+
+void GameObject::deleteParent(){
+	if(parent){
+		for(int i=0;i<parent->children.size();++i){
+			if(this == parent->children[i]){
+				parent->children.remove(i);
+				break;
+			}
+		}
+		parent = NULL;
+	}
+}
+
+void GameObject::deleteChild(GameObject* c){
+	for(int i=0;i<children.size();++i){
+		if(c == children[i]){
+			children[i]->parent = NULL;
+			children.remove(i);
+			break;
+		}
+	}
 }
 
 mat4 GameObject::translateMat(){

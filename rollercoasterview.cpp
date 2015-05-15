@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#define DEPTH_TEXTURE_SIZE 600
 
 RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	TextureDB::init();
@@ -13,12 +14,12 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	mainLight = &worldLight;
 	a.model = &testm;
 	b.model = a.model;
-	a.scale=vec3(5.2,5.2,5.2);
 	b.position=vec3(0,300,50);
 	//a.setChild(&b);
 	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
 	//testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
 	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
+	//testm.loadOBJ("C:/Users/Delin/Desktop/74796_Jibril_by_jugapugz_zip/jibril_by_jugapugz.obj");
 	frameNumber = 0;
 }
 
@@ -58,9 +59,10 @@ void RollerCoasterView::initializeGL(){
 	initializeOpenGLFunctions();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glClearColor(0.5, 0.5, 1.0, 1.0);
+	//glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[trang]);
@@ -79,6 +81,7 @@ void RollerCoasterView::initializeGL(){
 	uMainKs = glGetUniformLocation(mainProgram, "Ks");
 	uMainNs = glGetUniformLocation(mainProgram, "Ns");
 	uMainUseTexture = glGetUniformLocation(mainProgram, "useTexture");
+	uMainShadowMatrix = glGetUniformLocation(mainProgram, "shadowMatrix");
 
 	glEnableVertexAttribArray(vPosition);
 	glEnableVertexAttribArray(vUV);
@@ -92,6 +95,45 @@ void RollerCoasterView::initializeGL(){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	//////////////////////////////////////
+	// Create a depth texture
+	glGenTextures(1, &depth_texture);
+	glBindTexture(GL_TEXTURE_2D, depth_texture);
+	// Allocate storage for the texture data
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, 4096, 4096);
+	// Set the default filtering modes
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Set up depth comparison mode
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
+	GL_COMPARE_REF_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	// Set up wrapping modes
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	// Create FBO to render depth into
+	glGenFramebuffers(1, &depth_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
+	// Attach the depth texture to it
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+	depth_texture, 0);
+	// Disable color rendering as there are no color attachments
+	//glDrawBuffer(GL_NONE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	render_light_prog = loadShaders(":/shaders/rollercoasterview.vert",":/shaders/rollercoasterview.frag");
+	glUseProgram(render_light_prog);
+	uMVPMatrix = glGetUniformLocation(render_light_prog, "MVPMatrix");
+	glEnableVertexAttribArray(vPosition);
+//	glEnableVertexAttribArray(vUV);
+//	glEnableVertexAttribArray(vNormal);
+
 }
 
 void RollerCoasterView::resizeGL(int w, int h){
@@ -99,26 +141,111 @@ void RollerCoasterView::resizeGL(int w, int h){
 	height = h;
 	glViewport(0,0,w,h);
 //	worldCamera.position = vec3(0, 50, 50);
-//	worldCamera.rotation = vec3(-45,0,0);
-	worldCamera.position = vec3(0, 30, 20);
-	worldCamera.rotation = vec3(0,0,0);
+	worldCamera.rotation = vec3(-45,0,0);
+	worldCamera.position = vec3(0, 50, 20);
+//	worldCamera.rotation = vec3(0,0,0);
 	worldCamera.fov = 80;
 	worldCamera.aspect = (float)width/height;
+	worldCamera.left=-1;
+	worldCamera.right=1;
+	worldCamera.bottom=-1;
+	worldCamera.top=1;
 	worldCamera.znear = 0.1f;
 	worldCamera.zfar = 100;
-	worldLight.position = vec3(20.0f, 20.0f, 20.0f);
+	worldLight.position = vec3(20.0f, 50.0f, 20.0f);
+	worldLight.left=-1;
+	worldLight.right=1;
+	worldLight.bottom=-1;
+	worldLight.top=1;
+	worldLight.znear=1;
+	worldLight.zfar=200;
 }
 
 void RollerCoasterView::paintGL(){
+	// Time varying light position
+	vec3 light_position = mainLight->position;
+	// Matrices for rendering the scene
+	mat4 scene_model_matrix = a.modelMat();
+	// Matrices used when rendering from the light’s position
+	mat4 light_view_matrix = mainLight->lookAt(vec3(0,0,0), vec3(0,1,0));
+	mat4 light_projection_matrix = mainLight->frustum();
+//	light_view_matrix = mainCamera->view();
+//	light_projection_matrix = mainCamera->perspective();
+	// Now we render from the light’s position into the depth buffer.
+	// Select the appropriate program
+	glUseProgram(render_light_prog);
+//	glUniformMatrix4fv(uMVPMatrix,1, GL_FALSE, (light_projection_matrix * light_view_matrix * scene_model_matrix).data);
+	glUniformMatrix4fv(uMVPMatrix,1, GL_FALSE, (scene_model_matrix * light_view_matrix * light_projection_matrix).data);
+	// Bind the "depth only" FBO and set the viewport to the size
+	// of the depth texture
+	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
+//	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+	glViewport(0, 0, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
+	// Clear
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Enable polygon offset to resolve depth-fighting isuses
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(2.0f, 4.0f);
+	// Draw from the light’s point of view
+
+	for(int i=0;i<a.model->materials.size();++i){
+		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFV[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+//		glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
+//		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*2, a.model->mtlFT[i], GL_STATIC_DRAW);
+//		glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+//		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+//		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFN[i], GL_STATIC_DRAW);
+//		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glDrawArrays(GL_TRIANGLES, 0, a.model->faces[i].size()*3);
+		//glPointSize(100);
+		//glDrawArrays(GL_POINTS, 0, a.model->faces[i].size()*3);
+	}
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+//	glDrawBuffer(GL_BACK);
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	glViewport(0,0,width,height);
+	glUseProgram(mainProgram);
+//	mat4 scale_bias_matrix = mat4(
+//	0.5f, 0.0f, 0.0f, 0.0f,
+//	0.0f, 0.5f, 0.0f, 0.0f,
+//	0.0f, 0.0f, 0.5f, 0.0f,
+//	0.5f, 0.5f, 0.5f, 1.0f);
+	mat4 scale_bias_matrix = mat4(
+	0.5f, 0.0f, 0.0f, 0.5f,
+	0.0f, 0.5f, 0.0f, 0.5f,
+	0.0f, 0.0f, 0.5f, 0.5f,
+	0.0f, 0.0f, 0.0f, 1.0f);
+	mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
+//	mat4 shadow_matrix = light_view_matrix * light_projection_matrix * scale_bias_matrix;
+//	mat4 shadow_matrix = scale_bias_matrix * light_view_matrix * light_projection_matrix;
+
+
+
+	//////////////////////////////////////////////
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//a.scale=vec3(5.5,5.5,5.5);
 	a.scale=vec3(10,10,10);
+	//a.scale=vec3(20,20,20);
 	//a.scale=vec3(0.5,0.5,0.5);
+//	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainLight->lookAt(vec3(0,0,0), vec3(0,1,0)).data);
 	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
 	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->perspective().data);
+//	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainLight->frustum().data);
 	glUniform3fv(uMainLightPosition, 1 , mainLight->position.data);
+//	glUniform3fv(uMainEyePosition, 1 , mainLight->position.data);
 	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
-
+	glUniformMatrix4fv(uMainShadowMatrix, 1, GL_FALSE, shadow_matrix.data);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, depth_texture);
 
 
 	drawGameObject(a);
@@ -141,9 +268,11 @@ void RollerCoasterView::drawGameObject(GameObject& o, GameObject& p){
 			glUniform3fv(uMainKs, 1 , o.model->materials[i].Ks.data);
 			glUniform1f(uMainNs, o.model->materials[i].Ns);
 			glUniform1i(uMainUseTexture, o.model->materials[i].texture);
-
-			if(o.model->materials[i].texture != -1)
+//			glUniform1i(uMainUseTexture, -1);
+			if(o.model->materials[i].texture != -1){
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, TextureDB::ID[o.model->materials[i].texture]);
+			}
 
 //			glVertexAttribPointer自動偵測陣列大小錯誤(sizeof(float*)=4)
 //			不知如何直接指定glVertexAttribPointer大小只好先丟到VBO指定大小
@@ -163,6 +292,8 @@ void RollerCoasterView::drawGameObject(GameObject& o, GameObject& p){
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 			glDrawArrays(GL_TRIANGLES, 0, o.model->faces[i].size()*3);
+			//glPointSize(2000);
+			//glDrawArrays(GL_POINTS, 0, 10);
 			//glBindTexture(GL_TEXTURE_2D, 0);
 
 		}
@@ -189,7 +320,7 @@ GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fr
 		VertexShaderFile.close();
 		vs_source = VertexShaderCode.c_str();
 #ifdef _DEBUG
-		printf("%s\n",vs_source);
+//		printf("%s\n",vs_source);
 #endif /* DEBUG */
 	}
 	else{
@@ -207,7 +338,7 @@ GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fr
 		FragmentShaderFile.close();
 		fs_source = FragmentShaderCode.c_str();
 #ifdef _DEBUG
-		printf("%s\n",fs_source);
+//		printf("%s\n",fs_source);
 #endif /* DEBUG */
 	}
 	else{

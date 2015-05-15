@@ -1,9 +1,8 @@
-﻿#version 430 core
-//fragment shader
-in vec4 outcolor;
-out vec4 fragmentcolor; 
-
-void main()
+﻿// Fragment shader for shadow map generation
+#version 430 core
+layout (location = 0) out vec4 color;
+void main(void)
 {
-	fragmentcolor = outcolor; 
+	color = vec4(1.0);
+	//color = vec4(gl_FragCoord.z);
 }

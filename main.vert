@@ -7,13 +7,13 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 //uniform vec3 lightPosition;
-//uniform mat4 shadowMatrix;
+uniform mat4 shadowMatrix;
 
 out vec3 pPosition;
 out vec2 pUV;
 out vec3 pNormal;
 //out vec3 pLightDirection;
-//out vec4 pShadowCoord;
+out vec4 pShadowCoord;
 
 void main(void) {
 	mat4 modelView = viewMatrix * modelMatrix;
@@ -21,10 +21,10 @@ void main(void) {
 	//vec4 vPosition4 = modelView * vec4(vPosition, 1);
 	//vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 	//pPosition = -vPosition3;
-	pPosition = vPosition;
+	pPosition = (vec4(vPosition,1) * modelView).xyz;
 	pUV = vUV;
 	pNormal = normalize(mat3(modelView) * vNormal);
 	//pLightDirection = normalize(lightPosition - vPosition3);
-	//pShadowCoord = shadowMatrix * vec4(vPosition, 1);
+	pShadowCoord = shadowMatrix * vec4(pPosition, 1);
 	gl_Position = MVP * vec4(vPosition, 1);
 }
