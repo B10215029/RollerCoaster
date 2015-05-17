@@ -14,24 +14,22 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    rollercoasterview.cpp \
-    Track.cpp \
-    ControlPoint.cpp \
-    model.cpp \
+	rollercoasterview.cpp \
+	mesh.cpp \
     gameobject.cpp \
     camera.cpp \
-    texturedb.cpp
+    texturedb.cpp \
+    mat.cpp \
+    vec.cpp
 
 HEADERS  += mainwindow.h \
-    rollercoasterview.h \
-    Track.h \
-    ControlPoint.h \
-    vec3.h \
-    mat4.h \
-    model.h \
+	rollercoasterview.h \
+	mesh.h \
     gameobject.h \
     camera.h \
-    texturedb.h
+    texturedb.h \
+    mat.h \
+    vec.h
 
 FORMS    += mainwindow.ui
 

@@ -1,10 +1,10 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MESH_H
+#define MESH_H
 
 #include <QVector>
 #include <QMap>
 #include <QImage>
-#include "vec3.h"
+#include "vec.h"
 #include "texturedb.h"
 
 typedef struct{
@@ -21,12 +21,12 @@ typedef struct{
 	int texture;
 }material;
 
-class Model
+class Mesh
 {
 public:
-	Model();
-	Model(const char* filePath);
-	~Model();
+	Mesh();
+	Mesh(const char* filePath);
+	~Mesh();
 	void loadOBJ(const char* filePath);
 	void loadMTL(const QString fileName, const QString filePath);
 	void update();
@@ -43,4 +43,4 @@ public:
 
 };
 
-#endif // MODEL_H
+#endif // MESH_H

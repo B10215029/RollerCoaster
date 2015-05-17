@@ -1,20 +1,20 @@
-#include "model.h"
+#include "mesh.h"
 #include <QFile>
 #include <QTextStream>
 
-Model::Model(){
+Mesh::Mesh(){
 
 }
 
-Model::Model(const char* filePath){
+Mesh::Mesh(const char* filePath){
 	loadOBJ(filePath);
 }
 
-Model::~Model(){
+Mesh::~Mesh(){
 
 }
 
-void Model::loadOBJ(const char* filePath){
+void Mesh::loadOBJ(const char* filePath){
 	QFile file(filePath);
 	if(!file.open(QIODevice::ReadOnly)){
 		return;
@@ -71,7 +71,7 @@ void Model::loadOBJ(const char* filePath){
 	update();
 }
 
-void Model::loadMTL(const QString fileName, const QString filePath){
+void Mesh::loadMTL(const QString fileName, const QString filePath){
 	QFile file(filePath + fileName);
 	if(!file.open(QIODevice::ReadOnly)){
 		return;
@@ -107,7 +107,7 @@ void Model::loadMTL(const QString fileName, const QString filePath){
 	}
 	file.close();
 }
-void Model::update(){
+void Mesh::update(){
 	for(int i=0;i<mtlFV.size();++i)
 		delete[] mtlFV[i];
 	mtlFV.clear();

@@ -3,9 +3,9 @@
 
 #include <QVector>
 #include <QString>
-#include "vec3.h"
-#include "mat4.h"
-#include "model.h"
+#include "vec.h"
+#include "mat.h"
+#include "mesh.h"
 #include "texturedb.h"
 
 class GameObject
@@ -23,11 +23,13 @@ public:
 	mat4 scaleMat();
 	mat4 rotateMat();
 	mat4 modelMat();
+	static int NumOfID;
+	int id;
 	QString name;
 	vec3 position;
 	vec3 rotation;
 	vec3 scale;
-	Model* model;
+	Mesh* mesh;
 	GameObject* parent;
 	QVector<GameObject*> children;
 };

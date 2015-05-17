@@ -2,8 +2,8 @@
 #define CAMERA_H
 
 #include "gameobject.h"
-#include "mat4.h"
-#include "vec3.h"
+#include "mat.h"
+#include "vec.h"
 
 class Camera : public GameObject
 {

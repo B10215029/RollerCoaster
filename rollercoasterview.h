@@ -7,8 +7,16 @@
 #include <QStatusBar>
 #include "gameobject.h"
 #include "camera.h"
-#include "Track.h"
-#include "vec3.h"
+#include "vec.h"
+#include "mat.h"
+
+typedef struct{
+	GLuint Kd;
+	GLuint Ka;
+	GLuint Ks;
+	GLuint Ns;
+	GLuint UseTexture;
+}uniformMtl;
 
 class RollerCoasterView : public QOpenGLWidget, protected QOpenGLFunctions_4_3_Core
 {
@@ -22,7 +30,10 @@ signals:
 	void getLastFPS(QString);
 
 protected:
-	void drawGameObject(GameObject &o, GameObject &p=GameObject());
+	void initProgram(int program);
+	void drawProgram(int program);
+	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, GameObject &p=GameObject());
+
 
 	//Event
 	void mousePressEvent(QMouseEvent *event);
@@ -42,10 +53,6 @@ private:
 
 //variable
 public:
-	GLuint depth_texture;
-	GLuint depth_fbo;
-	GLuint render_light_prog;
-	GLuint uMVPMatrix;
 
 
 
@@ -53,7 +60,7 @@ public:
 	Camera* mainLight;
 	Camera worldCamera;
 	Camera worldLight;
-	Model testm;
+	Mesh testm;
 	GameObject a;
 	GameObject b;
 	GameObject root;
@@ -69,10 +76,11 @@ private:
 	int width;
 	int height;
 
-	enum {trang, NumVAOs};
+	enum {modelVAO, NumVAOs};
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
-	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
+//	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
+	enum {progMain, progShadow, progToon};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
@@ -83,18 +91,22 @@ private:
 	GLuint uMainProjectionMatrix;
 	GLuint uMainLightPosition;
 	GLuint uMainEyePosition;
-	GLuint uMainKa;
-	GLuint uMainKd;
-	GLuint uMainKs;
-	GLuint uMainNs;
-	GLuint uMainTex;
-	GLuint uMainUseTexture;
-	GLuint uMainShadowMatrix;
+	uniformMtl uMainMtl;
 
+	GLuint ShadowMainProgram;
+	GLuint uShadowMainModelMatrix;
+	GLuint uShadowMainViewMatrix;
+	GLuint uShadowMainProjectionMatrix;
+	GLuint uShadowMainShadowMatrix;
+	GLuint uShadowMainLightPosition;
+	GLuint uShadowMainEyePosition;
+	uniformMtl uShadowMainMtl;
 
-
-
-
+	GLuint shadowMapProgram;
+	GLuint uShadowMapMMatrix;
+	GLuint uShadowMapVPMatrix;
+	GLuint shadowMapTexture;
+	GLuint shadowMapFBO;
 };
 
 #endif // ROLLERCOASTERVIEW_H
