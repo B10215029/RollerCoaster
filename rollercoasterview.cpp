@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#define DEPTH_TEXTURE_SIZE 4096
+#define DEPTH_TEXTURE_SIZE 600
 
 RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	TextureDB::init();
@@ -98,64 +98,39 @@ void RollerCoasterView::initializeGL(){
 
 
 	//////////////////////////////////////
-	//shaders[0].filename="../shader/shadowmapping-light.vs.glsl";
-	//shaders[1].filename="../shader/shadowmapping-light.fs.glsl";
-	//shadow_lightProgram = LoadShaders(shaders);
-	render_light_prog = loadShaders(":/shaders/rollercoasterview.vert",":/shaders/rollercoasterview.frag");
-	//glUseProgram(shadow_lightProgram);
-	glUseProgram(render_light_prog);
-	//u_shadow_mvp = glGetUniformLocation(shadow_lightProgram, "mvp");
-	uMVPMatrix = glGetUniformLocation(render_light_prog, "MVPMatrix");
-	//glGenFramebuffers(1, &shadow_fbo);
-	glGenFramebuffers(1, &depth_fbo);
-	//glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
-	//glGenTextures(1, &shadow_texture);
-	glGenTextures(1, &depth_texture);
-	//glBindTexture(GL_TEXTURE_2D, shadow_texture);
-	glBindTexture(GL_TEXTURE_2D, depth_texture);
-	//glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, 4096, 4096);
-	glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadow_texture, 0);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, depth_texture, 0);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	// Create a depth texture
-
-
+	glGenTextures(1, &depth_texture);
+	glBindTexture(GL_TEXTURE_2D, depth_texture);
 	// Allocate storage for the texture data
 //	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
+	glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, 4096, 4096);
 	// Set the default filtering modes
-
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Set up depth comparison mode
-
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE,
+	GL_COMPARE_REF_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	// Set up wrapping modes
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	// Create FBO to render depth into
-
-
+	glGenFramebuffers(1, &depth_fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
 	// Attach the depth texture to it
-
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+	depth_texture, 0);
 	// Disable color rendering as there are no color attachments
 	//glDrawBuffer(GL_NONE);
 
-//	glEnableVertexAttribArray(vPosition);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	render_light_prog = loadShaders(":/shaders/rollercoasterview.vert",":/shaders/rollercoasterview.frag");
+	glUseProgram(render_light_prog);
+	uMVPMatrix = glGetUniformLocation(render_light_prog, "MVPMatrix");
+	glEnableVertexAttribArray(vPosition);
 //	glEnableVertexAttribArray(vUV);
 //	glEnableVertexAttribArray(vNormal);
 
@@ -177,7 +152,7 @@ void RollerCoasterView::resizeGL(int w, int h){
 	worldCamera.top=1;
 	worldCamera.znear = 0.1f;
 	worldCamera.zfar = 100;
-	worldLight.position = vec3(20.0f, 20.0f, 20.0f);
+	worldLight.position = vec3(20.0f, 50.0f, 20.0f);
 	worldLight.left=-1;
 	worldLight.right=1;
 	worldLight.bottom=-1;
@@ -187,167 +162,76 @@ void RollerCoasterView::resizeGL(int w, int h){
 }
 
 void RollerCoasterView::paintGL(){
-	static const GLfloat ones[] = { 1.0f };
-	static const GLfloat zero[] = { 0.0f };
-	static const GLfloat gray[] = { 0.1f, 0.1f, 0.1f, 0.0f };
-//	static const mat4 scale_bias_matrix = mat4(
-//		vec4(0.5f, 0.0f, 0.0f, 0.0f),
-//		vec4(0.0f, 0.5f, 0.0f, 0.0f),
-//		vec4(0.0f, 0.0f, 0.5f, 0.0f),
-//		vec4(0.5f, 0.5f, 0.5f, 1.0f)
-//		);
-	mat4 scale_bias_matrix = mat4(
-	0.5f, 0.0f, 0.0f, 0.5f,
-	0.0f, 0.5f, 0.0f, 0.5f,
-	0.0f, 0.0f, 0.5f, 0.5f,
-	0.0f, 0.0f, 0.0f, 1.0f);
-	static const GLenum buffs[] = { GL_COLOR_ATTACHMENT0 };
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-	//vec3 rot_light_position = vec3(lightPposition.x*sin((eyeAngley+60)*3.1415/180), lightPposition.y, lightPposition.z*cos((eyeAngley+60)*3.1415/180));
-	vec3 light_position = mainLight->position;
-	//mat4 shadow_light_proj_matrix = frustum(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 200.0f);
-	mat4 light_projection_matrix = mainLight->frustum();
-	//mat4 shadow_light_view_matrix = lookAt(rot_light_position, vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
-	mat4 light_view_matrix = mainLight->lookAt(vec3(0,0,0), vec3(0,1,0));
-//	mat4 light_vp_matrix = shadow_light_proj_matrix * shadow_light_view_matrix;
-
-	//mat4 shadow_sbpv_matrix = scale_bias_matrix * shadow_light_proj_matrix * shadow_light_view_matrix;
-	mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
-	//glViewport(0, 0, 4096, 4096);
-	glViewport(0, 0, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
-	//glEnable(GL_POLYGON_OFFSET_FILL);
-	glEnable(GL_POLYGON_OFFSET_FILL);
-	//glPolygonOffset(4.0f, 4.0f);
-	glPolygonOffset(4.0f, 4.0f);
-	//glUseProgram(shadow_lightProgram);
-	glUseProgram(render_light_prog);
-	//glBindVertexArray(VAO);
-	glBindVertexArray(VAOs[trang]);
-	///glDrawBuffers(1, buffs);
-	glDrawBuffers(1, buffs);
-	///glClearBufferfv(GL_COLOR, 0, zero);
-	glClearBufferfv(GL_COLOR, 0, zero);
-	///glClearBufferfv(GL_DEPTH, 0, ones);
-	glClearBufferfv(GL_DEPTH, 0, ones);
-//	for (int i = 0,ofs=0; i < PARTSNUM; i++){
-//		if((i==BACK&&(disp&1)==0)||((i==WINGL||i==WINGR)&&(disp&2)==0)||(i==FLOOR&&(disp&4)==0)||(disp&8)==0){
-//			ofs += vertices_size[i]*sizeof(vec3);
-//			continue;
-//		}
-//		glUniformMatrix4fv(u_shadow_mvp, 1, GL_FALSE, &(light_vp_matrix * Models[i])[0][0]);
-//		glEnableVertexAttribArray(0);
-//		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ofs);
-//		ofs += vertices_size[i]*sizeof(vec3);
-//		int vertexIDoffset = 0;
-//		for(int j = 0;j <mtls[i].size() ;j++){
-//			glDrawArrays(GL_TRIANGLES, vertexIDoffset  , faces[i][j+1]*3);
-//			vertexIDoffset += faces[i][j+1]*3;
-//		}
-//	}
-	mat4 scene_model_matrix = a.modelMat();
-	glUniformMatrix4fv(uMVPMatrix,1, GL_FALSE, (scene_model_matrix * light_view_matrix * light_projection_matrix).data);
-	glEnableVertexAttribArray(vPosition);
-	for(int i=0;i<a.model->materials.size();++i){
-		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFV[i], GL_STATIC_DRAW);
-		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glDrawArrays(GL_TRIANGLES, 0, a.model->faces[i].size()*3);
-	}
-	//glDisable(GL_POLYGON_OFFSET_FILL);
-	glDisable(GL_POLYGON_OFFSET_FILL);
-	//glBindFramebuffer(GL_FRAMEBUFFER, frame_fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-
 	// Time varying light position
-
+	vec3 light_position = mainLight->position;
 	// Matrices for rendering the scene
-
+	mat4 scene_model_matrix = a.modelMat();
 	// Matrices used when rendering from the light’s position
-
-
+	mat4 light_view_matrix = mainLight->lookAt(vec3(0,0,0), vec3(0,1,0));
+	mat4 light_projection_matrix = mainLight->frustum();
 //	light_view_matrix = mainCamera->view();
 //	light_projection_matrix = mainCamera->perspective();
 	// Now we render from the light’s position into the depth buffer.
 	// Select the appropriate program
-
+	glUseProgram(render_light_prog);
 //	glUniformMatrix4fv(uMVPMatrix,1, GL_FALSE, (light_projection_matrix * light_view_matrix * scene_model_matrix).data);
-
+	glUniformMatrix4fv(uMVPMatrix,1, GL_FALSE, (scene_model_matrix * light_view_matrix * light_projection_matrix).data);
 	// Bind the "depth only" FBO and set the viewport to the size
 	// of the depth texture
-
+	glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
 //	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-
+	glViewport(0, 0, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
 	// Clear
-//	glClearDepth(1.0f);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Enable polygon offset to resolve depth-fighting isuses
-
-
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(2.0f, 4.0f);
 	// Draw from the light’s point of view
 
-//	for(int i=0;i<a.model->materials.size();++i){
-//		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
-//		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFV[i], GL_STATIC_DRAW);
-//		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-////		glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
-////		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*2, a.model->mtlFT[i], GL_STATIC_DRAW);
-////		glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-////		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
-////		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFN[i], GL_STATIC_DRAW);
-////		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-//		glBindBuffer(GL_ARRAY_BUFFER, 0);
-//		glDrawArrays(GL_TRIANGLES, 0, a.model->faces[i].size()*3);
-//		//glPointSize(100);
-//		//glDrawArrays(GL_POINTS, 0, a.model->faces[i].size()*3);
-//	}
+	for(int i=0;i<a.model->materials.size();++i){
+		glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFV[i], GL_STATIC_DRAW);
+		glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+//		glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
+//		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*2, a.model->mtlFT[i], GL_STATIC_DRAW);
+//		glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+//		glBindBuffer(GL_ARRAY_BUFFER, Buffers[NormalBuffer]);
+//		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*a.model->faces[i].size()*3*3, a.model->mtlFN[i], GL_STATIC_DRAW);
+//		glVertexAttribPointer(vNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glDrawArrays(GL_TRIANGLES, 0, a.model->faces[i].size()*3);
+		//glPointSize(100);
+		//glDrawArrays(GL_POINTS, 0, a.model->faces[i].size()*3);
+	}
 
-
-
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 //	glDrawBuffer(GL_BACK);
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	//glViewport(0,0,w,h);
 	glViewport(0,0,width,height);
-	//glUseProgram(program);
 	glUseProgram(mainProgram);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, shadow_texture);
-	glDrawBuffer(GL_BACK);
-	glClearBufferfv(GL_DEPTH, 0, ones);
-	float eyey = DOR(eyeAngley);
-	View = lookAt(vec3(eyedistance*sin(eyey),2,eyedistance*cos(eyey))+eyePosition, eyePosition, vec3(0,1,0));
-	View = lookAt(vec3(0,10,25),vec3(0,0,0),vec3(0,1,0));
-	Projection = glm::perspective(80.0f,4.0f/3.0f,0.1f,100.0f);
-	glUniformMatrix4fv(u_view, 1, GL_FALSE, &View[0][0]);
-	glUniformMatrix4fv(u_projection, 1, GL_FALSE, &Projection[0][0]);
-	glUniform3fv(u_lightPosition, 1, &lightPposition[0]);
-
 //	mat4 scale_bias_matrix = mat4(
 //	0.5f, 0.0f, 0.0f, 0.0f,
 //	0.0f, 0.5f, 0.0f, 0.0f,
 //	0.0f, 0.0f, 0.5f, 0.0f,
 //	0.5f, 0.5f, 0.5f, 1.0f);
-//	mat4 scale_bias_matrix = mat4(
-//	0.5f, 0.0f, 0.0f, 0.5f,
-//	0.0f, 0.5f, 0.0f, 0.5f,
-//	0.0f, 0.0f, 0.5f, 0.5f,
-//	0.0f, 0.0f, 0.0f, 1.0f);
-//	mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
+	mat4 scale_bias_matrix = mat4(
+	0.5f, 0.0f, 0.0f, 0.5f,
+	0.0f, 0.5f, 0.0f, 0.5f,
+	0.0f, 0.0f, 0.5f, 0.5f,
+	0.0f, 0.0f, 0.0f, 1.0f);
+	mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
 //	mat4 shadow_matrix = light_view_matrix * light_projection_matrix * scale_bias_matrix;
 //	mat4 shadow_matrix = scale_bias_matrix * light_view_matrix * light_projection_matrix;
 
 
 
 	//////////////////////////////////////////////
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//a.scale=vec3(5.5,5.5,5.5);
 	a.scale=vec3(10,10,10);
 	//a.scale=vec3(20,20,20);
@@ -360,7 +244,7 @@ void RollerCoasterView::paintGL(){
 //	glUniform3fv(uMainEyePosition, 1 , mainLight->position.data);
 	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
 	glUniformMatrix4fv(uMainShadowMatrix, 1, GL_FALSE, shadow_matrix.data);
-
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, depth_texture);
 
 
