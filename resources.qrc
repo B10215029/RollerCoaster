@@ -7,4 +7,8 @@
         <file>shadowMap.frag</file>
         <file>shadowMap.vert</file>
     </qresource>
+    <qresource prefix="/models">
+        <file>floor.mtl</file>
+        <file>floor.obj</file>
+    </qresource>
 </RCC>

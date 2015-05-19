@@ -20,7 +20,10 @@ SOURCES += main.cpp\
     camera.cpp \
     texturedb.cpp \
     mat.cpp \
-    vec.cpp
+    vec.cpp \
+    light.cpp \
+    track.cpp \
+    controlpoint.cpp
 
 HEADERS  += mainwindow.h \
 	rollercoasterview.h \
@@ -29,7 +32,10 @@ HEADERS  += mainwindow.h \
     camera.h \
     texturedb.h \
     mat.h \
-    vec.h
+    vec.h \
+    light.h \
+    track.h \
+    controlpoint.h
 
 FORMS    += mainwindow.ui
 

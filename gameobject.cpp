@@ -101,7 +101,7 @@ mat4 GameObject::rotateMat(){
 			sin(RADIAN(rotation.z())), cos(RADIAN(rotation.z())), 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
-	return rx*ry*rz;
+	return rz*ry*rx;
 }
 
 mat4 GameObject::modelMat(){
@@ -109,7 +109,7 @@ mat4 GameObject::modelMat(){
 }
 
 void GameObject::animation(float t){
-	rotation.y()+=0.5;
+	//rotation.y()+=0.5;
 	//rotation.data[1]=t;
 	//rotation=vec3(0,0,t);
 }

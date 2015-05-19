@@ -6,7 +6,7 @@ uniform vec3 Ka;
 uniform vec3 Kd;
 uniform vec3 Ks;
 uniform float Ns;
-uniform vec3 lightPosition;
+uniform vec3 lightDirection;
 uniform vec3 eyePosition;
 uniform int useTexture;
 layout (binding = 0) uniform sampler2D tex;
@@ -25,8 +25,8 @@ void main(void){
 	vec3 diffuse = Kd;
 	if(useTexture != -1)
 		diffuse = texture2D(tex, pUV).rgb;
-	diffuse = f*diffuse * max(dot(pNormal, normalize(lightPosition)), 0);
-	vec3 halfv = normalize(normalize(lightPosition) + normalize(eyePosition-pPosition));
+	diffuse = f*diffuse * max(dot(pNormal, normalize(lightDirection)), 0);
+	vec3 halfv = normalize(normalize(lightDirection) + normalize(eyePosition-pPosition));
 	vec3 specular = Ks * pow(max(dot(pNormal, halfv), 0), Ns);
 	fragColor = vec4(ambient + diffuse + specular, 1);
 

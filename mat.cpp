@@ -270,3 +270,9 @@ mat4 mat4::transpose() const{
 mat4 operator *(float k, const mat4 &m){
 	return m*k;
 }
+
+vec3 operator*(const vec3 &v, const mat4 &m){
+	return vec3(m.data[0]*v.data[0] + m.data[4]*v.data[1] + m.data[8]*v.data[2] + m.data[12],
+				m.data[1]*v.data[0] + m.data[5]*v.data[1] + m.data[9]*v.data[2] + m.data[13],
+				m.data[2]*v.data[0] + m.data[6]*v.data[1] + m.data[10]*v.data[2] + m.data[14]);
+}

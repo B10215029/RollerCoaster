@@ -41,5 +41,6 @@ public:
 
 };
 mat4 operator *(float k, const mat4 &m);
+vec3 operator*(const vec3 &v, const mat4 &m);
 
 #endif // MAT_H

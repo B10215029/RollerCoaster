@@ -7,6 +7,8 @@
 #include <QStatusBar>
 #include "gameobject.h"
 #include "camera.h"
+#include "light.h"
+#include "track.h"
 #include "vec.h"
 #include "mat.h"
 
@@ -57,9 +59,9 @@ public:
 
 
 	Camera* mainCamera;
-	Camera* mainLight;
+	Light* mainLight;
 	Camera worldCamera;
-	Camera worldLight;
+	Light worldLight;
 	Mesh testm;
 	GameObject a;
 	GameObject b;
@@ -68,8 +70,14 @@ public:
 protected:
 
 private:
+
 	QTime elapsedTime;
 	unsigned int frameNumber;
+
+	int mPPX;//mouse press position X
+	int mPPY;//mouse press position Y
+	vec3 mPCP;//mouse press camera position
+	vec3 mPCR;//mouse press camera rotation
 
 
 	//OpenGL
@@ -89,7 +97,7 @@ private:
 	GLuint uMainModelMatrix;
 	GLuint uMainViewMatrix;
 	GLuint uMainProjectionMatrix;
-	GLuint uMainLightPosition;
+	GLuint uMainLightDirection;
 	GLuint uMainEyePosition;
 	uniformMtl uMainMtl;
 
@@ -98,7 +106,7 @@ private:
 	GLuint uShadowMainViewMatrix;
 	GLuint uShadowMainProjectionMatrix;
 	GLuint uShadowMainShadowMatrix;
-	GLuint uShadowMainLightPosition;
+	GLuint uShadowMainLightDirection;
 	GLuint uShadowMainEyePosition;
 	uniformMtl uShadowMainMtl;
 

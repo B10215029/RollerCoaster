@@ -47,6 +47,10 @@ mat4 Camera::frustum(){
 	return result;
 }
 
+mat4 Camera::projectionMat(){
+	return isPerspective?perspective():frustum();
+}
+
 mat4 Camera::lookAt(vec3 center, vec3 up){
 	vec3 f = (center - position).normalize();
 	vec3 u = up.normalize();
