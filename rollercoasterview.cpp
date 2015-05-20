@@ -33,12 +33,12 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldCamera.position = vec3(0, 50, 20);
 //	worldCamera.rotation = vec3(0,0,0);
 	worldCamera.fov = 80;
-	worldCamera.left=-1;
-	worldCamera.right=1;
-	worldCamera.bottom=-1;
-	worldCamera.top=1;
-	worldCamera.znear = 0.1f;
-	worldCamera.zfar = 200;
+	worldCamera.left=-10;
+	worldCamera.right=10;
+	worldCamera.bottom=-10;
+	worldCamera.top=10;
+	worldCamera.zNear = -1000;
+	worldCamera.zFar = 1000;
 
 	worldLight.position = vec3(20.0f, 50.0f, 20.0f);
 	worldLight.rotation.x()=45;
@@ -47,8 +47,8 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight.right=1;
 	worldLight.bottom=-1;
 	worldLight.top=1;
-	worldLight.znear=1;
-	worldLight.zfar=200;
+	worldLight.zNear=1;
+	worldLight.zFar=200;
 
 	frameNumber = 0;
 }
@@ -70,7 +70,10 @@ void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
 
 void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
 	if(event->buttons().testFlag(Qt::MiddleButton)){
-		worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())/5.0f,-(mPPY-event->y())/5.0f,0);
+//		if(worldCamera.isPerspective)
+//			worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())/5.0f,-(mPPY-event->y())/5.0f,0);
+//		else
+			worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())*worldCamera.top/300.0f,-(mPPY-event->y())*worldCamera.top/300.0f,0);
 	}
 	if(event->buttons().testFlag(Qt::LeftButton)){
 		worldCamera.rotation.x()=mPCR.x()+(mPPY-event->y())/5.0f;
@@ -86,10 +89,21 @@ void RollerCoasterView::mouseDoubleClickEvent(QMouseEvent *event){
 }
 
 void RollerCoasterView::wheelEvent(QWheelEvent *event){
-//	worldCamera.position.z()+=event->delta()/10.;
-	worldCamera.fov-=event->delta()/10.;
-	if(worldCamera.fov<1 || worldCamera.fov>179)
-		worldCamera.fov=worldCamera.fov<1?1:179;
+////	worldCamera.position.z()+=event->delta()/10.;
+//	if(worldCamera.isPerspective){
+//		worldCamera.position+=worldCamera.rotateMat()*vec3(0,0,-event->delta()/10.);
+////		worldCamera.fov-=event->delta()/10.;
+////		if(worldCamera.fov<1 || worldCamera.fov>179)
+////			worldCamera.fov=worldCamera.fov<1?1:179;
+//	}
+//	else{
+		worldCamera.top-=event->delta()*worldCamera.top/1000.;
+		if(worldCamera.top<0.001 || worldCamera.top>1000)
+			worldCamera.top=worldCamera.top<0.001?0.001:1000;
+		worldCamera.left=-worldCamera.top*width/height;
+		worldCamera.right=worldCamera.top*width/height;
+		worldCamera.bottom=-worldCamera.top;
+//	}
 
 }
 
@@ -149,6 +163,8 @@ void RollerCoasterView::resizeGL(int w, int h){
 	height = h;
 	glViewport(0,0,w,h);
 	worldCamera.aspect = (float)width/height;
+	worldCamera.left=-worldCamera.top*width/height;
+	worldCamera.right=worldCamera.top*width/height;
 }
 
 void RollerCoasterView::paintGL(){

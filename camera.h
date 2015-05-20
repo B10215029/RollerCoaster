@@ -15,6 +15,8 @@ public:
 	mat4 projectionMat();
 	mat4 lookAt(vec3 center, vec3 up);
 	mat4 view();
+	void setFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
+	void setPerspective(float fov, float aspect, float zNear, float zFar);
 	bool isPerspective;
 	float fov;
 	float aspect;
@@ -22,8 +24,8 @@ public:
 	float right;
 	float bottom;
 	float top;
-	float znear;
-	float zfar;
+	float zNear;
+	float zFar;
 };
 
 #endif // CAMERA_H

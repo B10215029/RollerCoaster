@@ -15,7 +15,7 @@ int GameObject::NumOfID = 0;
 
 GameObject::GameObject()
 {
-	id = NumOfID++;
+	id = ++NumOfID;
 	name = "GameObject";
 	position = vec3(0, 0, 0);
 	rotation = vec3(0, 0, 0);
