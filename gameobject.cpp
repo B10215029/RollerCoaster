@@ -109,7 +109,7 @@ mat4 GameObject::modelMat(){
 }
 
 void GameObject::animation(float t){
-	//rotation.y()+=0.5;
+	rotation.y()+=0.5;
 	//rotation.data[1]=t;
 	//rotation=vec3(0,0,t);
 }

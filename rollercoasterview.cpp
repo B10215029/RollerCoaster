@@ -15,12 +15,14 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight = Light();
 	mainCamera = &worldCamera;
 	mainLight = &worldLight;
+//	mainCamera = &worldLight;
 	a.mesh = &testm;
 	//a.scale=vec3(10,10,10);
 	root.scale=vec3(10,10,10);
 	b.mesh = NULL;
 	b.position=vec3(0,300,50);
 	root.mesh = new Mesh(":/models/floor.obj");
+//	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
 	a.setParent(&root);
 	//a.setChild(&b);
 	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
@@ -28,27 +30,13 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
 	//testm.loadOBJ("C:/Users/Delin/Desktop/74796_Jibril_by_jugapugz_zip/jibril_by_jugapugz.obj");
 
-//	worldCamera.position = vec3(0, 50, 50);
-	worldCamera.rotation = vec3(-45,0,0);
 	worldCamera.position = vec3(0, 50, 20);
-//	worldCamera.rotation = vec3(0,0,0);
-	worldCamera.fov = 80;
-	worldCamera.left=-10;
-	worldCamera.right=10;
-	worldCamera.bottom=-10;
-	worldCamera.top=10;
-	worldCamera.zNear = -1000;
-	worldCamera.zFar = 1000;
+	worldCamera.rotation = vec3(-45,0,0);
+	worldCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
 
-	worldLight.position = vec3(20.0f, 50.0f, 20.0f);
-	worldLight.rotation.x()=45;
-	worldLight.rotation.y()=45;
-	worldLight.left=-1;
-	worldLight.right=1;
-	worldLight.bottom=-1;
-	worldLight.top=1;
-	worldLight.zNear=1;
-	worldLight.zFar=200;
+	worldLight.position = vec3(0.0f, 100.0f, 100.0f);
+	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
+	worldLight.setFrustum(-500, 500, -500, 500, -1000, 1000);
 
 	frameNumber = 0;
 }
@@ -70,16 +58,11 @@ void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
 
 void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
 	if(event->buttons().testFlag(Qt::MiddleButton)){
-//		if(worldCamera.isPerspective)
-//			worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())/5.0f,-(mPPY-event->y())/5.0f,0);
-//		else
-			worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())*worldCamera.top/300.0f,-(mPPY-event->y())*worldCamera.top/300.0f,0);
+		worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())*worldCamera.top/300.0f,-(mPPY-event->y())*worldCamera.top/300.0f,0);
 	}
 	if(event->buttons().testFlag(Qt::LeftButton)){
 		worldCamera.rotation.x()=mPCR.x()+(mPPY-event->y())/5.0f;
 		worldCamera.rotation.y()=mPCR.y()+(mPPX-event->x())/5.0f;
-		if(worldCamera.rotation.x()<-90 || worldCamera.rotation.x()>90)
-			worldCamera.rotation.x()=worldCamera.rotation.x()<-90?-90:90;
 	}
 
 }
@@ -89,39 +72,58 @@ void RollerCoasterView::mouseDoubleClickEvent(QMouseEvent *event){
 }
 
 void RollerCoasterView::wheelEvent(QWheelEvent *event){
-////	worldCamera.position.z()+=event->delta()/10.;
-//	if(worldCamera.isPerspective){
-//		worldCamera.position+=worldCamera.rotateMat()*vec3(0,0,-event->delta()/10.);
-////		worldCamera.fov-=event->delta()/10.;
-////		if(worldCamera.fov<1 || worldCamera.fov>179)
-////			worldCamera.fov=worldCamera.fov<1?1:179;
-//	}
-//	else{
-		worldCamera.top-=event->delta()*worldCamera.top/1000.;
-		if(worldCamera.top<0.001 || worldCamera.top>1000)
-			worldCamera.top=worldCamera.top<0.001?0.001:1000;
-		worldCamera.left=-worldCamera.top*width/height;
-		worldCamera.right=worldCamera.top*width/height;
-		worldCamera.bottom=-worldCamera.top;
-//	}
+	worldCamera.top-=event->delta()*worldCamera.top/1000.;
+	if(worldCamera.top<0.001 || worldCamera.top>1000)
+		worldCamera.top=worldCamera.top<0.001?0.001:1000;
+	worldCamera.left=-worldCamera.top*width/height;
+	worldCamera.right=worldCamera.top*width/height;
+	worldCamera.bottom=-worldCamera.top;
 
 }
 
 void RollerCoasterView::keyPressEvent(QKeyEvent *event){
-	if(event->key()==Qt::Key_Q)
-		worldLight.rotation.x()++;
-	if(event->key()==Qt::Key_A)
-		worldLight.rotation.x()--;
-	if(event->key()==Qt::Key_W)
-		worldLight.rotation.y()++;
-	if(event->key()==Qt::Key_S)
-		worldLight.rotation.y()--;
-	if(event->key()==Qt::Key_E)
-		worldLight.rotation.z()++;
-	if(event->key()==Qt::Key_D)
-		worldLight.rotation.z()--;
-	if(event->key()==Qt::Key_Space)
+	switch(event->key()){
+	case Qt::Key_1:
+		worldCamera.rotation=vec3(0,0,0);
+		break;
+	case Qt::Key_2:
+		worldCamera.rotation.x()+=5.0f;
+		break;
+	case Qt::Key_3:
+		worldCamera.rotation=vec3(0,90,0);
+		break;
+	case Qt::Key_4:
+		worldCamera.rotation.y()-=5.0f;
+		break;
+	case Qt::Key_5:
 		worldCamera.isPerspective=!worldCamera.isPerspective;
+		break;
+	case Qt::Key_6:
+		worldCamera.rotation.y()+=5.0f;
+		break;
+	case Qt::Key_7:
+		worldCamera.rotation=vec3(-90,0,0);
+		break;
+	case Qt::Key_8:
+		worldCamera.rotation.x()-=5.0f;
+		break;
+	case Qt::Key_9:
+		worldCamera.rotation.z()+=5.0f;
+		break;
+	default:
+		if(event->key()==Qt::Key_Q)
+			worldLight.rotation.x()++;
+		if(event->key()==Qt::Key_A)
+			worldLight.rotation.x()--;
+		if(event->key()==Qt::Key_W)
+			worldLight.rotation.y()++;
+		if(event->key()==Qt::Key_S)
+			worldLight.rotation.y()--;
+		if(event->key()==Qt::Key_E)
+			worldLight.rotation.z()++;
+		if(event->key()==Qt::Key_D)
+			worldLight.rotation.z()--;
+	}
 }
 
 void RollerCoasterView::keyReleaseEvent(QKeyEvent *event){
@@ -263,7 +265,8 @@ void RollerCoasterView::drawProgram(int program){
 		// Matrices for rendering the scene
 //		mat4 scene_model_matrix = a.modelMat();
 		// Matrices used when rendering from the light’s position
-		mat4 light_view_matrix = mainLight->lookAt(vec3(0,0,0), vec3(0,1,0));
+//		mat4 light_view_matrix = mainLight->lookAt(vec3(0,0,0), vec3(0,1,0));
+		mat4 light_view_matrix = mainLight->view();
 		mat4 light_projection_matrix = mainLight->projectionMat();
 //		mat4 scale_bias_matrix = mat4(
 //		0.5f, 0.0f, 0.0f, 0.0f,
@@ -308,7 +311,7 @@ void RollerCoasterView::drawProgram(int program){
 		glUseProgram(ShadowMainProgram);
 		glUniformMatrix4fv(uShadowMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
 		glUniformMatrix4fv(uShadowMainProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
-		glUniform3fv(uShadowMainLightDirection, 1 , mainLight->position.data);
+		glUniform3fv(uShadowMainLightDirection, 1 , mainLight->direction().data);
 		glUniform3fv(uShadowMainEyePosition, 1 , mainCamera->position.data);
 		glUniformMatrix4fv(uShadowMainShadowMatrix, 1, GL_FALSE, shadow_matrix.data);
 		glActiveTexture(GL_TEXTURE1);
