@@ -12,6 +12,10 @@ vec3::vec3(const vec3 &a){
 	data[2] = a.data[2];
 }
 
+vec3::vec3(float a){
+	data[0] = data[1] = data[2] = a;
+}
+
 vec3::vec3(float nx, float ny, float nz){
 	data[0] = nx;
 	data[1] = ny;

@@ -23,7 +23,7 @@ SOURCES += main.cpp\
     vec.cpp \
     light.cpp \
     track.cpp \
-    controlpoint.cpp
+    transform.cpp
 
 HEADERS  += mainwindow.h \
 	rollercoasterview.h \
@@ -35,7 +35,7 @@ HEADERS  += mainwindow.h \
     vec.h \
     light.h \
     track.h \
-    controlpoint.h
+    transform.h
 
 FORMS    += mainwindow.ui
 

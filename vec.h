@@ -13,6 +13,7 @@ public:
 
 	vec3();
 	vec3(const vec3 &a);
+	vec3(float a);
 	vec3(float nx, float ny, float nz);
 
 	vec3& operator=(const vec3 &a);

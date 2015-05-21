@@ -10,7 +10,7 @@
 #define DEGREE(x) (x*(180.0/PI))
 #endif
 
-Camera::Camera()
+Camera::Camera():GameObject()
 {
 
 }

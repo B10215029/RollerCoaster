@@ -5,6 +5,7 @@
 #include <QOpenGLFunctions_4_3_Core>
 #include <QTime>
 #include <QStatusBar>
+#include "transform.h"
 #include "gameobject.h"
 #include "camera.h"
 #include "light.h"
@@ -34,7 +35,7 @@ signals:
 protected:
 	void initProgram(int program);
 	void drawProgram(int program);
-	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, GameObject &p=GameObject());
+	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, Transform &p=Transform());
 
 
 	//Event
@@ -65,6 +66,7 @@ public:
 	Mesh testm;
 	GameObject a;
 	GameObject b;
+	Track tra;
 	GameObject root;
 
 protected:

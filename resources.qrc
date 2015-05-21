@@ -10,5 +10,7 @@
     <qresource prefix="/models">
         <file>floor.mtl</file>
         <file>floor.obj</file>
+        <file>controlPoint.mtl</file>
+        <file>controlPoint.obj</file>
     </qresource>
 </RCC>

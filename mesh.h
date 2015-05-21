@@ -11,7 +11,7 @@ typedef struct{
 	int v;
 	int vt;
 	int vn;
-}face;
+}VerticesData;
 
 typedef struct{
 	vec3 Kd;
@@ -33,7 +33,7 @@ public:
 	QVector<vec3> vertices;
 	QVector<vec3> uvs;
 	QVector<vec3> normals;
-	QVector<QVector<QVector<face>>> faces;
+	QVector<QVector<QVector<VerticesData>>> faces;//[mtl][face][vertices]
 	QMap<QString, int> materialName;
 	QVector<material> materials;
 

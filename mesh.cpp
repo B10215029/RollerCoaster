@@ -36,9 +36,9 @@ void Mesh::loadOBJ(const char* filePath){
 			normals.push_back(vec3(arg[1].toFloat(), arg[2].toFloat(), arg[3].toFloat()));
 		}
 		else if(arg.size() >= 4 && arg[0] == "f"){
-			QVector<face> f;
+			QVector<VerticesData> f;
 			for(int i = 1;i<arg.size();++i){
-				face index;
+				VerticesData index;
 				QStringList info = arg[i].split('/');
 				if(info.size() == 1){
 					index.v = info[0].toInt() - 1;
@@ -86,7 +86,7 @@ void Mesh::loadMTL(const QString fileName, const QString filePath){
 			materialName.insert(arg[1], materialName.size());
 			materials.push_back(material());
 			materials[materials.size()-1].texture = -1;
-			faces.push_back(QVector<QVector<face>>());
+			faces.push_back(QVector<QVector<VerticesData>>());
 		}
 		else if(arg.size() >= 4 && arg[0] == "Kd"){
 

@@ -18,12 +18,15 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 //	mainCamera = &worldLight;
 	a.mesh = &testm;
 	//a.scale=vec3(10,10,10);
-	root.scale=vec3(10,10,10);
+	//root.scale=vec3(10,10,10);
 	b.mesh = NULL;
 	b.position=vec3(0,300,50);
 	root.mesh = new Mesh(":/models/floor.obj");
 //	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
 	a.setParent(&root);
+
+	root.setChild(new Track());
+	root.children.last()->name = "Track";
 	//a.setChild(&b);
 	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
 	//testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
@@ -321,7 +324,7 @@ void RollerCoasterView::drawProgram(int program){
 	}
 }
 
-void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl, GameObject &p){
+void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl, Transform &p){
 	if(o.mesh){
 		glUniformMatrix4fv(uMM, 1, GL_FALSE, (o.modelMat()*p.modelMat()).data);
 		for(int i=0;i<o.mesh->materials.size();++i){
