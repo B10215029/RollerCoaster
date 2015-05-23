@@ -22,23 +22,16 @@ Camera::~Camera()
 
 mat4 Camera::perspective(){
 	mat4 result;
-//	float range = tan(RADIAN(fov / 2.0)) * znear;
+//	float range = tan(RADIAN(fov / 2.0)) * zNear;
 //	float left = -range * aspect;
 //	float right = range * aspect;
 //	float bottom = -range;
 //	float top = range;
-//	result.data[0] = (2.0 * znear) / (right - left);
-//	result.data[5] = (2.0 * znear) / (top - bottom);
-//	result.data[10] = -(zFar + znear) / (zFar - znear);
+//	result.data[0] = (2.0 * zNear) / (right - left);
+//	result.data[5] = (2.0 * zNear) / (top - bottom);
+//	result.data[10] = -(zFar + zNear) / (zFar - zNear);
 //	result.data[11] = -1;
-//	result.data[14] = -(2.0 * zFar * znear) / (zFar - znear);
-
-//	float tanHalfFOV = tan(RADIAN(fov / 2.0));
-//	result.data[0] = 1.0f / (tanHalfFOV * aspect);
-//	result.data[5] = 1.0f / tanHalfFOV;
-//	result.data[10] = (zNear + zFar) / (zNear - zFar);
-//	result.data[11] = -1.0f;
-//	result.data[14] = (2.0f * zFar * zNear) / (zNear - zFar);
+//	result.data[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
 
 	result.data[0] = 2.0 / (right - left);
 	result.data[5] = 2.0 / (top - bottom);

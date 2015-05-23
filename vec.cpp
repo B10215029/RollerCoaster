@@ -150,14 +150,14 @@ vec4::vec4(float nx, float ny, float nz, float nw){
 	data[0] = nx;
 	data[1] = ny;
 	data[2] = nz;
-	data[2] = nw;
+	data[3] = nw;
 }
 
 vec4::vec4(float nx, float ny, float nz){
 	data[0] = nx;
 	data[1] = ny;
 	data[2] = nz;
-	data[2] = 1.0;
+	data[3] = 1.0;
 }
 
 vec4& vec4::operator=(const vec4 &a){
@@ -232,6 +232,10 @@ vec4& vec4::operator/=(float a){
 
 float vec4::operator*(const vec4 &a) const{
 	return data[0]*a.data[0] + data[1]*a.data[1] + data[2]*a.data[2] + data[3]*a.data[3];
+}
+
+vec3 vec4::xyz(){
+	return vec3(data[0], data[1], data[2]);
 }
 
 void vec4::zero(){

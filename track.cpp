@@ -16,36 +16,52 @@
 Track::Track():GameObject(){
 	mesh = new Mesh();
 	controlPointMesh.loadOBJ(":/models/controlPoint.obj");
+	trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
 	controlPoints.clear();
 	trains.clear();
 	trackType = TrackType;
 	curveType = CardinalType;
+//	curveType = CubicType;
 	driving = false;
 	addPoint(vec3(50, 10, 0));
 	addPoint(vec3(0, 10, 50));
 	addPoint(vec3(-50, 10, 0));
 	addPoint(vec3(0, 10, -50));
-	trackType = LineType;
-	curveType = LinearType;
-	trackType = RoadType;
-	loadFile(QString("C:/Users/Delin/Desktop/Train2008/TrackFiles/spiral.txt"));
+	addTrain();
+	setTrainModel(0);
+//	trackType = LineType;
+//	curveType = LinearType;
+//	trackType = TrackType;
+//	loadFile(QString("C:/Users/Delin/Desktop/Train2008/TrackFiles/spiral.txt"));
+
+	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
+	update();
 }
 
 Track::~Track(){
 	delete mesh;
+	for(int i=0;i<controlPoints.size();++i)
+		delete controlPoints[i];
+	for(int i=0;i<trains.size();++i)
+		delete trains[i];
+	for(int i=0;i<trainModel.size();++i)
+		delete trainModel[i];
 }
 
 void Track::update(){
+	for(int i=0;i<trainPos.size();++i)
+		trainPos[i] = 0;
+	getTrackLength();
 	mesh->clear();
 	mesh->materialName.insert(QString("steel"), mesh->materialName.size());
 	mesh->materialName.insert(QString("woold"), mesh->materialName.size());
 	mesh->materials.push_back(material());
 	mesh->materials.push_back(material());
-	mesh->faces.push_back(QVector<QVector<VerticesData>>());
-	mesh->faces.push_back(QVector<QVector<VerticesData>>());
-	mesh->materials[0].Kd = vec3(0.8, 0.8, 0.8);
-	mesh->materials[0].Ka = vec3(0.2, 0.2, 0.2);
-	mesh->materials[0].Ks = vec3(0.9, 0.9, 0.9);
+	mesh->faces.push_back(QVector<QVector<VerticesData> >());
+	mesh->faces.push_back(QVector<QVector<VerticesData> >());
+	mesh->materials[0].Kd = vec3(0.8f, 0.8f, 0.8f);
+	mesh->materials[0].Ka = vec3(0.2f, 0.2f, 0.2f);
+	mesh->materials[0].Ks = vec3(0.9f, 0.9f, 0.9f);
 	mesh->materials[0].Ns = 50;
 	mesh->materials[0].texture = -1;
 	mesh->materials[1].Kd = vec3(1, 0.75, 0.5);
@@ -57,177 +73,127 @@ void Track::update(){
 	mesh->normals.push_back(vec3( 0, 1, 0));
 	mesh->normals.push_back(vec3(-1, 0, 0));
 	mesh->normals.push_back(vec3( 0,-1, 0));
+	Transform fsp = getCurvePosition(1, controlPoints.size()-1);
+	mat4 fsprm = fsp.rotateMat();
 	switch(trackType){
 	case LineType:
+		mesh->vertices.push_back(fsp.position+vec3( 0.1f, 0.1f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-0.1f, 0.1f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-0.1f,-0.1f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3( 0.1f,-0.1f, 0)*fsprm);
 		for(int i=0;i<controlPoints.size();i++){
 			Transform sp = getCurvePosition(0, i);
 			Transform ep;
-			mat4 rm = sp.rotateMat();
-			mesh->vertices.push_back(sp.position+vec3( 0.1, 0.1, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3(-0.1, 0.1, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3(-0.1,-0.1, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3( 0.1,-0.1, 0)*rm);
-			for(int j=0;j<10;++j){
-				ep = getCurvePosition(0.1*(j+1), i);
+			float currentTrackLength = trackLength[i]-(i==0?0:trackLength[i-1]);
+			for(int j=0;j<currentTrackLength;++j){
+				ep = getCurvePosition(1/currentTrackLength*(j+1), i);
 				mat4 rm = ep.rotateMat();
-				mesh->vertices.push_back(ep.position+vec3( 0.1, 0.1, 0)*rm);
-				mesh->vertices.push_back(ep.position+vec3(-0.1, 0.1, 0)*rm);
-				mesh->vertices.push_back(ep.position+vec3(-0.1,-0.1, 0)*rm);
-				mesh->vertices.push_back(ep.position+vec3( 0.1,-0.1, 0)*rm);
-				QVector<VerticesData> face0;
-				VerticesData v00 = {mesh->vertices.size() -4, -1, 0};
-				VerticesData v01 = {mesh->vertices.size() -5, -1, 0};
-				VerticesData v02 = {mesh->vertices.size() -8, -1, 0};
-				face0.push_back(v00);
-				face0.push_back(v02);
-				face0.push_back(v01);
-				mesh->faces[0].push_back(face0);
-				QVector<VerticesData> face1;
-				VerticesData v10 = {mesh->vertices.size() -4, -1, 1};
-				VerticesData v11 = {mesh->vertices.size() -8, -1, 1};
-				VerticesData v12 = {mesh->vertices.size() -3, -1, 1};
-				face1.push_back(v10);
-				face1.push_back(v12);
-				face1.push_back(v11);
-				mesh->faces[0].push_back(face1);
-				QVector<VerticesData> face2;
-				VerticesData v20 = {mesh->vertices.size() -3, -1, 1};
-				VerticesData v21 = {mesh->vertices.size() -8, -1, 1};
-				VerticesData v22 = {mesh->vertices.size() -7, -1, 1};
-				face2.push_back(v20);
-				face2.push_back(v22);
-				face2.push_back(v21);
-				mesh->faces[0].push_back(face2);
-				QVector<VerticesData> face3;
-				VerticesData v30 = {mesh->vertices.size() -3, -1, 2};
-				VerticesData v31 = {mesh->vertices.size() -7, -1, 2};
-				VerticesData v32 = {mesh->vertices.size() -2, -1, 2};
-				face3.push_back(v30);
-				face3.push_back(v32);
-				face3.push_back(v31);
-				mesh->faces[0].push_back(face3);
-				QVector<VerticesData> face4;
-				VerticesData v40 = {mesh->vertices.size() -2, -1, 2};
-				VerticesData v41 = {mesh->vertices.size() -7, -1, 2};
-				VerticesData v42 = {mesh->vertices.size() -6, -1, 2};
-				face4.push_back(v40);
-				face4.push_back(v42);
-				face4.push_back(v41);
-				mesh->faces[0].push_back(face4);
-				QVector<VerticesData> face5;
-				VerticesData v50 = {mesh->vertices.size() -2, -1, 3};
-				VerticesData v51 = {mesh->vertices.size() -6, -1, 3};
-				VerticesData v52 = {mesh->vertices.size() -1, -1, 3};
-				face5.push_back(v50);
-				face5.push_back(v52);
-				face5.push_back(v51);
-				mesh->faces[0].push_back(face5);
-				QVector<VerticesData> face6;
-				VerticesData v60 = {mesh->vertices.size() -1, -1, 3};
-				VerticesData v61 = {mesh->vertices.size() -6, -1, 3};
-				VerticesData v62 = {mesh->vertices.size() -5, -1, 3};
-				face6.push_back(v60);
-				face6.push_back(v62);
-				face6.push_back(v61);
-				mesh->faces[0].push_back(face6);
-				QVector<VerticesData> face7;
-				VerticesData v70 = {mesh->vertices.size() -1, -1, 0};
-				VerticesData v71 = {mesh->vertices.size() -5, -1, 0};
-				VerticesData v72 = {mesh->vertices.size() -4, -1, 0};
-				face7.push_back(v70);
-				face7.push_back(v72);
-				face7.push_back(v71);
-				mesh->faces[0].push_back(face7);
-
+				mesh->vertices.push_back(ep.position+vec3( 0.1f, 0.1f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-0.1f, 0.1f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-0.1f,-0.1f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3( 0.1f,-0.1f, 0)*rm);
+				int v0a[] = {-4, -4, -3, -3, -2, -2, -1, -1};
+				int v1a[] = {-8, -3, -7, -2, -6, -1, -5, -4};
+				int v2a[] = {-5, -8, -8, -7, -7, -6, -6, -5};
+				int na[] = {0, 1, 1, 2, 2, 3, 3, 0};
+				for(int k=0;k<8;++k){
+					QVector<VerticesData> face;
+					VerticesData v0 = {mesh->vertices.size() + v0a[k], -1, na[k]};
+					VerticesData v1 = {mesh->vertices.size() + v1a[k], -1, na[k]};
+					VerticesData v2 = {mesh->vertices.size() + v2a[k], -1, na[k]};
+					face.push_back(v0);
+					face.push_back(v1);
+					face.push_back(v2);
+					mesh->faces[0].push_back(face);
+				}
 				sp = ep;
 			}
 		}
 		mesh->update();
 		break;
 	case TrackType:
-
-		break;
-	case RoadType:
+		mesh->vertices.push_back(fsp.position+vec3( 1.5f, 0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3( 0.5f, 0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3( 0.5f,-0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3( 1.5f,-0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-0.5f, 0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-1.5f, 0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-1.5f,-0.5f, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-0.5f,-0.5f, 0)*fsprm);
 		for(int i=0;i<controlPoints.size();i++){
 			Transform sp = getCurvePosition(0, i);
 			Transform ep;
-			mat4 rm = sp.rotateMat();
-			mesh->vertices.push_back(sp.position+vec3( 5, 0.5, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3(-5, 0.5, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3(-5,-0.5, 0)*rm);
-			mesh->vertices.push_back(sp.position+vec3( 5,-0.5, 0)*rm);
-			for(int j=0;j<10;++j){
-				ep = getCurvePosition(0.1*(j+1), i);
+			float currentTrackLength = trackLength[i]-(i==0?0:trackLength[i-1]);
+			for(int j=0;j<currentTrackLength;++j){
+				ep = getCurvePosition(1/currentTrackLength*(j+1), i);
+				mat4 rm = ep.rotateMat();
+				mesh->vertices.push_back(ep.position+vec3( 1.5f, 0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3( 0.5f, 0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3( 0.5f,-0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3( 1.5f,-0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-0.5f, 0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-1.5f, 0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-1.5f,-0.5f, 0)*rm);
+				mesh->vertices.push_back(ep.position+vec3(-0.5f,-0.5f, 0)*rm);
+				int v0a[] = {- 4, - 4, - 3, - 3, - 2, - 2, - 1, - 1};
+				int v1a[] = {-12, - 3, -11, - 2, -10, - 1, - 9, - 4};
+				int v2a[] = {- 9, -12, -12, -11, -11, -10, -10, - 9};
+				int v3a[] = {- 8, - 8, - 7, - 7, - 6, - 6, - 5, - 5};
+				int v4a[] = {-16, - 7, -15, - 6, -14, - 5, - 13, - 8};
+				int v5a[] = {- 13, -16, -16, -15, -15, -14, -14, - 13};
+				int na[] = {0, 1, 1, 2, 2, 3, 3, 0};
+				for(int k=0;k<8;++k){
+					QVector<VerticesData> face1,face2;
+					VerticesData v0 = {mesh->vertices.size() + v0a[k], -1, na[k]};
+					VerticesData v1 = {mesh->vertices.size() + v1a[k], -1, na[k]};
+					VerticesData v2 = {mesh->vertices.size() + v2a[k], -1, na[k]};
+					VerticesData v3 = {mesh->vertices.size() + v3a[k], -1, na[k]};
+					VerticesData v4 = {mesh->vertices.size() + v4a[k], -1, na[k]};
+					VerticesData v5 = {mesh->vertices.size() + v5a[k], -1, na[k]};
+					face1.push_back(v0);
+					face1.push_back(v1);
+					face1.push_back(v2);
+					face2.push_back(v3);
+					face2.push_back(v4);
+					face2.push_back(v5);
+					mesh->faces[0].push_back(face1);
+					mesh->faces[0].push_back(face2);
+				}
+				sp = ep;
+			}
+		}
+		mesh->update();
+		break;
+	case RoadType:
+		mesh->vertices.push_back(fsp.position+vec3( 5, 0.5, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-5, 0.5, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3(-5,-0.5, 0)*fsprm);
+		mesh->vertices.push_back(fsp.position+vec3( 5,-0.5, 0)*fsprm);
+		for(int i=0;i<controlPoints.size();i++){
+			Transform sp = getCurvePosition(0, i);
+			Transform ep;
+			float currentTrackLength = trackLength[i]-(i==0?0:trackLength[i-1]);
+			for(int j=0;j<currentTrackLength;++j){
+				ep = getCurvePosition(1/currentTrackLength*(j+1), i);
 				mat4 rm = ep.rotateMat();
 				mesh->vertices.push_back(ep.position+vec3( 5, 0.5, 0)*rm);
 				mesh->vertices.push_back(ep.position+vec3(-5, 0.5, 0)*rm);
 				mesh->vertices.push_back(ep.position+vec3(-5,-0.5, 0)*rm);
 				mesh->vertices.push_back(ep.position+vec3( 5,-0.5, 0)*rm);
-				QVector<VerticesData> face0;
-				VerticesData v00 = {mesh->vertices.size() -4, -1, 0};
-				VerticesData v01 = {mesh->vertices.size() -5, -1, 0};
-				VerticesData v02 = {mesh->vertices.size() -8, -1, 0};
-				face0.push_back(v00);
-				face0.push_back(v02);
-				face0.push_back(v01);
-				mesh->faces[1].push_back(face0);
-				QVector<VerticesData> face1;
-				VerticesData v10 = {mesh->vertices.size() -4, -1, 1};
-				VerticesData v11 = {mesh->vertices.size() -8, -1, 1};
-				VerticesData v12 = {mesh->vertices.size() -3, -1, 1};
-				face1.push_back(v10);
-				face1.push_back(v12);
-				face1.push_back(v11);
-				mesh->faces[1].push_back(face1);
-				QVector<VerticesData> face2;
-				VerticesData v20 = {mesh->vertices.size() -3, -1, 1};
-				VerticesData v21 = {mesh->vertices.size() -8, -1, 1};
-				VerticesData v22 = {mesh->vertices.size() -7, -1, 1};
-				face2.push_back(v20);
-				face2.push_back(v22);
-				face2.push_back(v21);
-				mesh->faces[1].push_back(face2);
-				QVector<VerticesData> face3;
-				VerticesData v30 = {mesh->vertices.size() -3, -1, 2};
-				VerticesData v31 = {mesh->vertices.size() -7, -1, 2};
-				VerticesData v32 = {mesh->vertices.size() -2, -1, 2};
-				face3.push_back(v30);
-				face3.push_back(v32);
-				face3.push_back(v31);
-				mesh->faces[1].push_back(face3);
-				QVector<VerticesData> face4;
-				VerticesData v40 = {mesh->vertices.size() -2, -1, 2};
-				VerticesData v41 = {mesh->vertices.size() -7, -1, 2};
-				VerticesData v42 = {mesh->vertices.size() -6, -1, 2};
-				face4.push_back(v40);
-				face4.push_back(v42);
-				face4.push_back(v41);
-				mesh->faces[1].push_back(face4);
-				QVector<VerticesData> face5;
-				VerticesData v50 = {mesh->vertices.size() -2, -1, 3};
-				VerticesData v51 = {mesh->vertices.size() -6, -1, 3};
-				VerticesData v52 = {mesh->vertices.size() -1, -1, 3};
-				face5.push_back(v50);
-				face5.push_back(v52);
-				face5.push_back(v51);
-				mesh->faces[1].push_back(face5);
-				QVector<VerticesData> face6;
-				VerticesData v60 = {mesh->vertices.size() -1, -1, 3};
-				VerticesData v61 = {mesh->vertices.size() -6, -1, 3};
-				VerticesData v62 = {mesh->vertices.size() -5, -1, 3};
-				face6.push_back(v60);
-				face6.push_back(v62);
-				face6.push_back(v61);
-				mesh->faces[1].push_back(face6);
-				QVector<VerticesData> face7;
-				VerticesData v70 = {mesh->vertices.size() -1, -1, 0};
-				VerticesData v71 = {mesh->vertices.size() -5, -1, 0};
-				VerticesData v72 = {mesh->vertices.size() -4, -1, 0};
-				face7.push_back(v70);
-				face7.push_back(v72);
-				face7.push_back(v71);
-				mesh->faces[1].push_back(face7);
-
+				int v0a[] = {-4, -4, -3, -3, -2, -2, -1, -1};
+				int v1a[] = {-8, -3, -7, -2, -6, -1, -5, -4};
+				int v2a[] = {-5, -8, -8, -7, -7, -6, -6, -5};
+				int na[] = {0, 1, 1, 2, 2, 3, 3, 0};
+				for(int k=0;k<8;++k){
+					QVector<VerticesData> face;
+					VerticesData v0 = {mesh->vertices.size() + v0a[k], -1, na[k]};
+					VerticesData v1 = {mesh->vertices.size() + v1a[k], -1, na[k]};
+					VerticesData v2 = {mesh->vertices.size() + v2a[k], -1, na[k]};
+					face.push_back(v0);
+					face.push_back(v1);
+					face.push_back(v2);
+					mesh->faces[1].push_back(face);
+				}
 				sp = ep;
 			}
 		}
@@ -239,25 +205,82 @@ void Track::update(){
 
 Transform Track::getCurvePosition(float t, int sp){
 	Transform r;
-	int p1 = (sp+controlPoints.size())%controlPoints.size();
-	int p2 = (sp+controlPoints.size()+1)%controlPoints.size();
-	vec3 v = controlPoints[p2]->position - controlPoints[p1]->position;
+	int p1 = (sp+controlPoints.size()-1)%controlPoints.size();
+	int p2 = (sp+controlPoints.size()+0)%controlPoints.size();
+	int p3 = (sp+controlPoints.size()+1)%controlPoints.size();
+	int p4 = (sp+controlPoints.size()+2)%controlPoints.size();
+	vec3 v;
+	mat4 g,m;
+	vec4 tv(t*t*t, t*t, t, 1);
+	vec4 dtv(3*t*t, 2*t, 1, 0);
 	switch(curveType){
 	case LinearType:
-		r.position = controlPoints[p1]->position + v*t;
-		r.rotation.x() = DEGREE(atan(-v.y()/fabs(v.z())))*-1;
-		r.rotation.y() = (DEGREE(atan(-v.x()/(-v.z())))+(v.z()>0?180:0))*-1;
-		r.rotation.z() = 0;
-		return r;
+		v = controlPoints[p3]->position - controlPoints[p2]->position;
+		r.position = controlPoints[p2]->position + v*t;
 		break;
 	case CardinalType:
-
+		g.data[0] = controlPoints[p1]->position.x();
+		g.data[1] = controlPoints[p2]->position.x();
+		g.data[2] = controlPoints[p3]->position.x();
+		g.data[3] = controlPoints[p4]->position.x();
+		g.data[4] = controlPoints[p1]->position.y();
+		g.data[5] = controlPoints[p2]->position.y();
+		g.data[6] = controlPoints[p3]->position.y();
+		g.data[7] = controlPoints[p4]->position.y();
+		g.data[8] = controlPoints[p1]->position.z();
+		g.data[9] = controlPoints[p2]->position.z();
+		g.data[10] = controlPoints[p3]->position.z();
+		g.data[11] = controlPoints[p4]->position.z();
+		m = mat4(-0.5, 1.0,-0.5, 0.0,
+				  1.5,-2.5, 0.0, 1.0,
+				 -1.5, 2.0, 0.5, 0.0,
+				  0.5,-0.5, 0.0, 0.0);
+		r.position = ((g*m)*tv).xyz();
+		v = ((g*m)*dtv).xyz();
 		break;
 	case CubicType:
-
+		g.data[0] = controlPoints[p1]->position.x();
+		g.data[1] = controlPoints[p2]->position.x();
+		g.data[2] = controlPoints[p3]->position.x();
+		g.data[3] = controlPoints[p4]->position.x();
+		g.data[4] = controlPoints[p1]->position.y();
+		g.data[5] = controlPoints[p2]->position.y();
+		g.data[6] = controlPoints[p3]->position.y();
+		g.data[7] = controlPoints[p4]->position.y();
+		g.data[8] = controlPoints[p1]->position.z();
+		g.data[9] = controlPoints[p2]->position.z();
+		g.data[10] = controlPoints[p3]->position.z();
+		g.data[11] = controlPoints[p4]->position.z();
+		m = mat4(-1/6.0, 3/6.0,-3/6.0, 1/6.0,
+				  3/6.0,-6/6.0, 0/6.0, 4/6.0,
+				 -3/6.0, 3/6.0, 3/6.0, 1/6.0,
+				  1/6.0, 0/6.0, 0/6.0, 0/6.0);
+		r.position = ((g*m)*tv).xyz();
+		v = ((g*m)*dtv).xyz();
 		break;
 	}
-	return vec3();
+	r.rotation.x() = DEGREE(asin(v.y()/v.length()))*(v.z()<0?-1:1);
+	r.rotation.y() = (DEGREE(atan(-v.x()/(-v.z())))+(v.z()>0?180:0))*-1;
+	r.rotation.z() = 0;
+	return r;
+}
+
+void Track::getTrackLength(){
+	trackLength.clear();
+	switch(curveType){
+	case LinearType:
+		for(int i=0;i<controlPoints.size();++i)
+			trackLength.append((i==0?0:trackLength.last())+distance(controlPoints[i]->position, controlPoints[(i+1)%controlPoints.size()]->position));
+		break;
+	case CardinalType:
+		for(int i=0;i<controlPoints.size();++i)
+			trackLength.append((i==0?0:trackLength.last())+distance(controlPoints[i]->position, controlPoints[(i+1)%controlPoints.size()]->position));
+		break;
+	case CubicType:
+		for(int i=0;i<controlPoints.size();++i)
+			trackLength.append((i==0?0:trackLength.last())+distance(controlPoints[i]->position, controlPoints[(i+1)%controlPoints.size()]->position));
+		break;
+	}
 }
 
 void Track::loadFile(QString filePath){
@@ -279,7 +302,8 @@ void Track::loadFile(QString filePath){
 	controlPoints.clear();
 	while(!data.atEnd()){
 		vec3 pos,rot;
-		QStringList words = data.readLine().split(QRegExp("\\s+"));
+//		QStringList words = data.readLine().split(QRegExp("\\s+"));
+		QStringList words = data.readLine().split(' ');
 		if(words[0][0]=='#'||words.size()<3)
 			continue;
 		if (words.size() >= 3) {
@@ -314,15 +338,14 @@ void Track::saveFile(QString filePath){
 		return;
 	}
 	QTextStream data(&file);
-	data << controlPoints.size() << "\n";
+	data << controlPoints.size() << "\r\n";
 	for(int i=0; i<controlPoints.size(); ++i)
-		data << controlPoints[i]->position.x()
-			 << controlPoints[i]->position.y()
-			 << controlPoints[i]->position.z()
-			 << controlPoints[i]->rotation.x()
-			 << controlPoints[i]->rotation.y()
-			 << controlPoints[i]->rotation.z()
-			 <<"\n";
+		data << controlPoints[i]->position.x() << " "
+			 << controlPoints[i]->position.y() << " "
+			 << controlPoints[i]->position.z() << " "
+			 << controlPoints[i]->rotation.x() << " "
+			 << controlPoints[i]->rotation.y() << " "
+			 << controlPoints[i]->rotation.z() << "\r\n";
 	file.close();
 }
 
@@ -353,15 +376,38 @@ void Track::removePoint(int pointID){
 }
 
 void Track::addTrain(){
-
+	trains.append(new GameObject());
+	setChild(trains.last());
+	trainPos.append(0);
+//	trains.last()->scale = vec3(10,10,10);
 }
 
 void Track::removeTrain(){
 
 }
 
+void Track::setTrainModel(int modelID){
+	for(int i=0;i<trains.size();++i){
+		trains[i]->mesh = trainModel[modelID];
+	}
+}
+
 void Track::animation(float t){
-	update();
 	if(!driving) return;
+	for(int i=0;i<trains.size();++i){
+		int p;
+		for(p=0;p<trackLength.size();++p)
+			if(trackLength[p]>trainPos[i])
+				break;
+		float pt=trainPos[i]-(p==0?0:trackLength[p-1]);
+		pt/=trackLength[p]-(p==0?0:trackLength[p-1]);
+		trains[i]->position = getCurvePosition(pt, p).position;
+		trains[i]->rotation = getCurvePosition(pt, p).rotation;
+		trainCamera.position = trains[i]->position;
+		trainCamera.rotation = trains[i]->rotation;// + vec3(0, 90, 0);
+		trainPos[i]+=1;
+		if(trainPos[i]>trackLength.last())
+			trainPos[i]-=trackLength.last();
+	}
 
 }

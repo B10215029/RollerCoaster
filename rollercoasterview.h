@@ -35,7 +35,7 @@ signals:
 protected:
 	void initProgram(int program);
 	void drawProgram(int program);
-	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, Transform &p=Transform());
+	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, Transform p=Transform());
 
 
 	//Event
@@ -66,7 +66,7 @@ public:
 	Mesh testm;
 	GameObject a;
 	GameObject b;
-	Track tra;
+	Track track;
 	GameObject root;
 
 protected:

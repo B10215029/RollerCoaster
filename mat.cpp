@@ -51,6 +51,7 @@ mat4::mat4(
 	data[14] = m32;
 	data[15] = m33;
 }
+
 mat4::mat4(const vec4 &v1, const vec4 &v2, const vec4 &v3, const vec4 &v4){
 	data[0] = v1.data[0];
 	data[1] = v1.data[1];

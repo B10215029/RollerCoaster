@@ -72,6 +72,7 @@ public:
 
 	float operator*(const vec4 &a) const;
 
+	vec3 xyz();
 	void zero();
 	vec4 normalize();
 	float length() const;

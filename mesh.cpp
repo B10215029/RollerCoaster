@@ -91,7 +91,7 @@ void Mesh::loadMTL(const QString fileName, const QString filePath){
 			materialName.insert(arg[1], materialName.size());
 			materials.push_back(material());
 			materials[materials.size()-1].texture = -1;
-			faces.push_back(QVector<QVector<VerticesData>>());
+			faces.push_back(QVector<QVector<VerticesData> >());
 		}
 		else if(arg.size() >= 4 && arg[0] == "Kd"){
 			materials[materials.size()-1].Kd = vec3(arg[1].toFloat(), arg[2].toFloat(), arg[3].toFloat());

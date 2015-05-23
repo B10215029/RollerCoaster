@@ -2,6 +2,7 @@
 #define TRACK_H
 
 #include "gameobject.h"
+#include "camera.h"
 #include "mesh.h"
 #include <QVector>
 
@@ -13,6 +14,7 @@ public:
 
 	void update();
 	Transform getCurvePosition(float t, int sp);
+	void getTrackLength();
 	void loadFile(QString filePath);
 	void saveFile(QString filePath);
 	void addPoint();
@@ -29,9 +31,12 @@ public:
 	unsigned int curveType;
 	QVector<GameObject*> controlPoints;
 	QVector<GameObject*> trains;
+	QVector<float> trainPos;
+	Camera trainCamera;
 	Mesh controlPointMesh;
 	Mesh selectControlPointMesh;
-	QVector<Mesh> trainModel;
+	QVector<Mesh*> trainModel;
+	QVector<float> trackLength;
 	bool driving;
 };
 

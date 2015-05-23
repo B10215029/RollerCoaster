@@ -124,7 +124,7 @@
           <property name="title">
            <string>Curve</string>
           </property>
-          <widget class="QRadioButton" name="radioButton_Cardinal">
+          <widget class="QRadioButton" name="radioButton_Linear">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -137,7 +137,7 @@
             <string>Linear</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QRadioButton" name="radioButton_Cubic">
@@ -153,7 +153,7 @@
             <string>Cubic</string>
            </property>
           </widget>
-          <widget class="QRadioButton" name="radioButton_Linear">
+          <widget class="QRadioButton" name="radioButton_Cardinal">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -164,6 +164,9 @@
            </property>
            <property name="text">
             <string>Cardinal</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </widget>
@@ -203,7 +206,7 @@
             <string>Line</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
           <widget class="QRadioButton" name="radioButton_Road">
@@ -230,6 +233,9 @@
            </property>
            <property name="text">
             <string>Track</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </widget>
@@ -351,5 +357,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

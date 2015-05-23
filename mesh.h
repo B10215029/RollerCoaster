@@ -34,7 +34,7 @@ public:
 	QVector<vec3> vertices;
 	QVector<vec3> uvs;
 	QVector<vec3> normals;
-	QVector<QVector<QVector<VerticesData>>> faces;//[mtl][face][vertices]
+	QVector<QVector<QVector<VerticesData> > > faces;//[mtl][face][vertices]
 	QMap<QString, int> materialName;
 	QVector<material> materials;
 
