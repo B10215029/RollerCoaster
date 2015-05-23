@@ -68,6 +68,7 @@ public:
 	GameObject b;
 	Track track;
 	GameObject root;
+	bool isLine;
 
 protected:
 

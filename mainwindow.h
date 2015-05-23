@@ -34,6 +34,12 @@ private slots:
 
 	void on_pushButton_Play_clicked();
 
+	void on_actionLine_triggered(bool checked);
+
+	void on_pushButton_Add_clicked();
+
+	void on_pushButton_Delete_clicked();
+
 private:
 	Ui::MainWindow *ui;
 };

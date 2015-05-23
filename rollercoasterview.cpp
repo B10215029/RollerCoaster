@@ -24,11 +24,18 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	root.mesh = new Mesh(":/models/floor.obj");
 //	root.animationType = GameObject::AnimRotateY;
 //	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
-	a.setParent(&root);
-	a.rotation = vec3(0, 0, 30);
+//	a.setParent(&root);
+
 
 	root.setChild(&track);
 	track.name = "Track";
+
+	track.addTrain();
+	track.setTrainModel(0);
+	track.trains[0]->setChild(&a);
+	a.position = vec3(0, 1, -1);
+	a.rotation = vec3(0, 180, 0);
+
 //	mainCamera = &track.trainCamera;
 	//a.setChild(&b);
 	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
@@ -44,6 +51,7 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
 	worldLight.setFrustum(-500, 500, -500, 500, -1000, 1000);
 
+	isLine = false;
 	frameNumber = 0;
 }
 
@@ -79,8 +87,8 @@ void RollerCoasterView::mouseDoubleClickEvent(QMouseEvent *event){
 
 void RollerCoasterView::wheelEvent(QWheelEvent *event){
 	worldCamera.top-=event->delta()*worldCamera.top/1000.;
-	if(worldCamera.top<0.001 || worldCamera.top>1000)
-		worldCamera.top=worldCamera.top<0.001?0.001:1000;
+//	if(worldCamera.top<0.001 || worldCamera.top>1000)
+//		worldCamera.top=worldCamera.top<0.001?0.001:1000;
 	worldCamera.left=-worldCamera.top*width/height;
 	worldCamera.right=worldCamera.top*width/height;
 	worldCamera.bottom=-worldCamera.top;
@@ -176,6 +184,10 @@ void RollerCoasterView::resizeGL(int w, int h){
 }
 
 void RollerCoasterView::paintGL(){
+	if(isLine)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 //	mainCamera->position=track.trains[0]->position;
 //	mainCamera->rotation=track.trains[0]->rotation;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

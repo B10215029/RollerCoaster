@@ -80,3 +80,20 @@ void MainWindow::on_pushButton_Play_clicked()
 {
 	ui->openGLWidget->track.driving = !ui->openGLWidget->track.driving;
 }
+
+void MainWindow::on_actionLine_triggered(bool checked)
+{
+	ui->openGLWidget->isLine = checked;
+}
+
+void MainWindow::on_pushButton_Add_clicked()
+{
+	ui->openGLWidget->track.addPoint();
+	ui->openGLWidget->track.update();
+}
+
+void MainWindow::on_pushButton_Delete_clicked()
+{
+	ui->openGLWidget->track.removePoint(-1);
+	ui->openGLWidget->track.update();
+}
