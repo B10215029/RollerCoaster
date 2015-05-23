@@ -22,8 +22,10 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	b.mesh = NULL;
 	b.position=vec3(0,300,50);
 	root.mesh = new Mesh(":/models/floor.obj");
+//	root.animationType = GameObject::AnimRotateY;
 //	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
 	a.setParent(&root);
+	a.rotation = vec3(0, 0, 30);
 
 	root.setChild(new Track());
 	root.children.last()->name = "Track";
@@ -178,6 +180,7 @@ void RollerCoasterView::paintGL(){
 	drawProgram(progMain);
 //	drawProgram(progShadow);
 	glBindVertexArray(0);
+
 
 	frameNumber++;
 	emit getLastFPS(QString("FPS:%1 --FN:%2").arg(int(1000./(elapsedTime.elapsed()))).arg(frameNumber));

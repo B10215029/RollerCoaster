@@ -8,6 +8,9 @@ class Transform
 {
 public:
 	Transform();
+	Transform(const vec3& p);
+	Transform(const vec3& p, const vec3& r);
+	Transform(const vec3& p, const vec3& r, const vec3& s);
 	~Transform();
 	Transform operator+(const Transform &a) const;
 	Transform operator-(const Transform &a) const;

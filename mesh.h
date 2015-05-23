@@ -30,6 +30,7 @@ public:
 	void loadOBJ(const char* filePath);
 	void loadMTL(const QString fileName, const QString filePath);
 	void update();
+	void clear();
 	QVector<vec3> vertices;
 	QVector<vec3> uvs;
 	QVector<vec3> normals;

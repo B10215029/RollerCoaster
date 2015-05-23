@@ -79,6 +79,33 @@ void GameObject::deleteChild(GameObject* c){
 }
 
 void GameObject::animation(float t){
+	if(animationType & AnimRotateX){
+
+	}
+	if(animationType & AnimRotateXB){
+
+	}
+	if(animationType & AnimRotateY){
+		rotation.y()+=0.5;
+	}
+	if(animationType & AnimRotateYB){
+		rotation.y()-=0.5;
+	}
+	if(animationType & AnimRotateZ){
+
+	}
+	if(animationType & AnimRotateZB){
+
+	}
+	if(animationType & AnimTrain){
+
+	}
+	if(animationType & AnimCharIdle){
+
+	}
+	if(animationType & AnimCharWalk){
+
+	}
 	//rotation.y()+=0.5;
 	//rotation.data[1]=t;
 	//rotation=vec3(0,0,t);

@@ -11,7 +11,12 @@ Mesh::Mesh(const char* filePath){
 }
 
 Mesh::~Mesh(){
-
+	for(int i=0;i<mtlFV.size();++i)
+		delete[] mtlFV[i];
+	for(int i=0;i<mtlFT.size();++i)
+		delete[] mtlFT[i];
+	for(int i=0;i<mtlFN.size();++i)
+		delete[] mtlFN[i];
 }
 
 void Mesh::loadOBJ(const char* filePath){
@@ -89,7 +94,6 @@ void Mesh::loadMTL(const QString fileName, const QString filePath){
 			faces.push_back(QVector<QVector<VerticesData>>());
 		}
 		else if(arg.size() >= 4 && arg[0] == "Kd"){
-
 			materials[materials.size()-1].Kd = vec3(arg[1].toFloat(), arg[2].toFloat(), arg[3].toFloat());
 		}
 		else if(arg.size() >= 4 && arg[0] == "Ka"){
@@ -157,5 +161,22 @@ void Mesh::update(){
 		}
 		mtlFN.push_back(normalArray);
 	}
+}
 
+void Mesh::clear(){
+	vertices.clear();
+	uvs.clear();
+	normals.clear();
+	faces.clear();
+	materialName.clear();
+	materials.clear();
+	for(int i=0;i<mtlFV.size();++i)
+		delete[] mtlFV[i];
+	mtlFV.clear();
+	for(int i=0;i<mtlFT.size();++i)
+		delete[] mtlFT[i];
+	mtlFT.clear();
+	for(int i=0;i<mtlFN.size();++i)
+		delete[] mtlFN[i];
+	mtlFN.clear();
 }

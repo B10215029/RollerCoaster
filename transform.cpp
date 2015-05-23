@@ -13,9 +13,26 @@
 
 Transform::Transform()
 {
-	position = vec3();
-	rotation = vec3();
+	position = vec3(0);
+	rotation = vec3(0);
 	scale = vec3(1);
+}
+Transform::Transform(const vec3& p){
+	position = p;
+	rotation = vec3(0);
+	scale = vec3(1);
+}
+
+Transform::Transform(const vec3& p, const vec3& r){
+	position = p;
+	rotation = r;
+	scale = vec3(1);
+}
+
+Transform::Transform(const vec3& p, const vec3& r, const vec3& s){
+	position = p;
+	rotation = r;
+	scale = s;
 }
 
 Transform::~Transform()
@@ -58,6 +75,14 @@ mat4 Transform::scaleMat(){
 }
 
 mat4 Transform::rotateMat(){
+//	float x = RADIAN(rotation.x());
+//	float y = RADIAN(rotation.y());
+//	float z = RADIAN(rotation.z());
+//	mat4 r(cos(x)*cos(z)-cos(y)*sin(x)*sin(z), -cos(y)*cos(z)*sin(x)-cos(x)*sin(z), sin(x)*sin(y), 0,
+//		   cos(z)*sin(x)+cos(x)*cos(y)*sin(z), cos(x)*cos(y)*cos(z)-sin(x)*sin(z), -cos(x)*sin(y), 0,
+//		   sin(y)*sin(z), cos(z)*sin(y), cos(y), 0,
+//		   0, 0, 0, 1
+//		   );
 	mat4 rx(1, 0, 0, 0,
 			0, cos(RADIAN(rotation.x())), -sin(RADIAN(rotation.x())), 0,
 			0, sin(RADIAN(rotation.x())), cos(RADIAN(rotation.x())), 0,
@@ -70,9 +95,31 @@ mat4 Transform::rotateMat(){
 			sin(RADIAN(rotation.z())), cos(RADIAN(rotation.z())), 0, 0,
 			0, 0, 1, 0,
 			0, 0, 0, 1);
+//	mat4 rx(1, 0, 0, 0,
+//			0, cos(RADIAN(rotation.x())), sin(RADIAN(rotation.x())), 0,
+//			0, -sin(RADIAN(rotation.x())), cos(RADIAN(rotation.x())), 0,
+//			0, 0, 0, 1);
+//	mat4 ry(cos(RADIAN(rotation.y())), 0, -sin(RADIAN(rotation.y())), 0,
+//			0, 1, 0, 0,
+//			sin(RADIAN(rotation.y())), 0, cos(RADIAN(rotation.y())), 0,
+//			0, 0, 0, 1);
+//	mat4 rz(cos(RADIAN(rotation.z())), sin(RADIAN(rotation.z())), 0, 0,
+//			-sin(RADIAN(rotation.z())), cos(RADIAN(rotation.z())), 0, 0,
+//			0, 0, 1, 0,
+//			0, 0, 0, 1);
+//	mat4 xyz = rx * ry * rz;
+//	mat4 yzx = ry * rz * rx;
+//	mat4 zxy = rz * rx * ry;
+//	mat4 zyx = rz * ry * rx;
+//	mat4 yxz = ry * rx * rz;
+//	mat4 xzy = rx * rz * ry;
 	return rz*ry*rx;
+//	return rx*ry*rz;
+//	return ry*rx*rz;
+//	return r;
 }
 
 mat4 Transform::modelMat(){
-	return translateMat() * scaleMat() * rotateMat();
+//	return translateMat() * scaleMat() * rotateMat();
+	return rotateMat() * scaleMat() * translateMat();
 }
