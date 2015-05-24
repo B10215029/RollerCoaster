@@ -37,69 +37,102 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_Camera">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>100</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Microsoft JhengHei UI</family>
-           </font>
-          </property>
-          <property name="title">
-           <string>Camera</string>
-          </property>
-          <widget class="QRadioButton" name="radioButton_World">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>25</y>
-             <width>100</width>
-             <height>20</height>
-            </rect>
-           </property>
+         <widget class="QComboBox" name="comboBox">
+          <item>
            <property name="text">
-            <string>World</string>
+            <string>None</string>
            </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QRadioButton" name="radioButton_Top">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>50</y>
-             <width>100</width>
-             <height>20</height>
-            </rect>
-           </property>
+          </item>
+          <item>
            <property name="text">
-            <string>Top</string>
+            <string>Offset</string>
            </property>
-          </widget>
-          <widget class="QRadioButton" name="radioButton_Train">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>75</y>
-             <width>100</width>
-             <height>20</height>
-            </rect>
-           </property>
+          </item>
+          <item>
            <property name="text">
-            <string>Train</string>
+            <string>Mosaics</string>
            </property>
-          </widget>
+          </item>
+          <item>
+           <property name="text">
+            <string>Part Mosaics</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Color Distortion</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Spatial Distortion</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Displacement</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Patterns</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>fog</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>DoG</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>DoG2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Swirling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cross stitching</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cross stitching2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Edge Detectors</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Edge Detectors2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2D Shockwave</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Radial Blur Filter</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Kaleidoscope</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>

@@ -52,6 +52,7 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight.setFrustum(-500, 500, -500, 500, -1000, 1000);
 
 	isLine = false;
+	effectMode = 0;
 	frameNumber = 0;
 }
 
@@ -71,6 +72,8 @@ void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
+	mMPX = event->x();
+	mMPY = event->y();
 	if(event->buttons().testFlag(Qt::MiddleButton)){
 		worldCamera.position=mPCP+worldCamera.rotateMat()*vec3((mPPX-event->x())*worldCamera.top/300.0f,-(mPPY-event->y())*worldCamera.top/300.0f,0);
 	}
@@ -78,7 +81,6 @@ void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
 		worldCamera.rotation.x()=mPCR.x()+(mPPY-event->y())/5.0f;
 		worldCamera.rotation.y()=mPCR.y()+(mPPX-event->x())/5.0f;
 	}
-
 }
 
 void RollerCoasterView::mouseDoubleClickEvent(QMouseEvent *event){
@@ -124,6 +126,9 @@ void RollerCoasterView::keyPressEvent(QKeyEvent *event){
 	case Qt::Key_9:
 		worldCamera.rotation.z()+=5.0f;
 		break;
+	case Qt::Key_Backspace:
+		frameNumber = 0;
+		break;
 	default:
 		if(event->key()==Qt::Key_Q)
 			worldLight.rotation.x()++;
@@ -163,6 +168,7 @@ void RollerCoasterView::initializeGL(){
 
 	initProgram(progMain);
 	initProgram(progShadow);
+	initProgram(progEffect);
 
 	for(int i=0;i<TextureDB::ID.size();++i){
 		glGenTextures(1, &TextureDB::ID[i]);
@@ -181,19 +187,27 @@ void RollerCoasterView::resizeGL(int w, int h){
 	worldCamera.aspect = (float)width/height;
 	worldCamera.left=-worldCamera.top*width/height;
 	worldCamera.right=worldCamera.top*width/height;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, effectFBO);
+	glDeleteTextures(1, &effectTexture);
+	glGenTextures(1, &effectTexture);
+	glBindTexture(GL_TEXTURE_2D, effectTexture);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, w, h);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, effectTexture, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0 );
 }
 
 void RollerCoasterView::paintGL(){
-	if(isLine)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 //	mainCamera->position=track.trains[0]->position;
 //	mainCamera->rotation=track.trains[0]->rotation;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(VAOs[modelVAO]);
-	drawProgram(progMain);
-//	drawProgram(progShadow);
+//	drawProgram(progMain);
+	drawProgram(progShadow);
+//	drawProgram(progEffect);
 	glBindVertexArray(0);
 
 
@@ -221,19 +235,19 @@ void RollerCoasterView::initProgram(int program){
 
 		break;
 	case progShadow:
-		ShadowMainProgram = loadShaders(":/shaders/shadowMain.vert",":/shaders/shadowMain.frag");
-		glUseProgram(ShadowMainProgram);
-		uShadowMainModelMatrix		 = glGetUniformLocation(ShadowMainProgram, "modelMatrix");
-		uShadowMainViewMatrix		 = glGetUniformLocation(ShadowMainProgram, "viewMatrix");
-		uShadowMainProjectionMatrix	 = glGetUniformLocation(ShadowMainProgram, "projectionMatrix");
-		uShadowMainLightDirection	 = glGetUniformLocation(ShadowMainProgram, "lightDirection");
-		uShadowMainEyePosition		 = glGetUniformLocation(ShadowMainProgram, "eyePosition");
-		uShadowMainMtl.Ka			 = glGetUniformLocation(ShadowMainProgram, "Ka");
-		uShadowMainMtl.Kd			 = glGetUniformLocation(ShadowMainProgram, "Kd");
-		uShadowMainMtl.Ks			 = glGetUniformLocation(ShadowMainProgram, "Ks");
-		uShadowMainMtl.Ns			 = glGetUniformLocation(ShadowMainProgram, "Ns");
-		uShadowMainMtl.UseTexture	 = glGetUniformLocation(ShadowMainProgram, "useTexture");
-		uShadowMainShadowMatrix		 = glGetUniformLocation(ShadowMainProgram, "shadowMatrix");
+		shadowMainProgram = loadShaders(":/shaders/shadowMain.vert",":/shaders/shadowMain.frag");
+		glUseProgram(shadowMainProgram);
+		uShadowMainModelMatrix		 = glGetUniformLocation(shadowMainProgram, "modelMatrix");
+		uShadowMainViewMatrix		 = glGetUniformLocation(shadowMainProgram, "viewMatrix");
+		uShadowMainProjectionMatrix	 = glGetUniformLocation(shadowMainProgram, "projectionMatrix");
+		uShadowMainLightDirection	 = glGetUniformLocation(shadowMainProgram, "lightDirection");
+		uShadowMainEyePosition		 = glGetUniformLocation(shadowMainProgram, "eyePosition");
+		uShadowMainMtl.Ka			 = glGetUniformLocation(shadowMainProgram, "Ka");
+		uShadowMainMtl.Kd			 = glGetUniformLocation(shadowMainProgram, "Kd");
+		uShadowMainMtl.Ks			 = glGetUniformLocation(shadowMainProgram, "Ks");
+		uShadowMainMtl.Ns			 = glGetUniformLocation(shadowMainProgram, "Ns");
+		uShadowMainMtl.UseTexture	 = glGetUniformLocation(shadowMainProgram, "useTexture");
+		uShadowMainShadowMatrix		 = glGetUniformLocation(shadowMainProgram, "shadowMatrix");
 
 		shadowMapProgram = loadShaders(":/shaders/shadowMap.vert",":/shaders/shadowMap.frag");
 		glUseProgram(shadowMapProgram);
@@ -267,6 +281,34 @@ void RollerCoasterView::initProgram(int program){
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		break;
+	case progEffect:
+		effectProgram = loadShaders(":/shaders/effect.vert",":/shaders/effect.frag");
+		glUseProgram(effectProgram);
+		uEffectMode			 = glGetUniformLocation(effectProgram, "mode");
+		uEffectTime			 = glGetUniformLocation(effectProgram, "time");
+		uEffectResolution	 = glGetUniformLocation(effectProgram, "resolution");
+		uEffectMouse		 = glGetUniformLocation(effectProgram, "mouse");
+
+		glGenFramebuffers( 1, &effectFBO );
+		glBindFramebuffer( GL_FRAMEBUFFER, effectFBO );
+		glGenTextures(1, &effectTexture);
+		glBindTexture(GL_TEXTURE_2D, effectTexture);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, effectTexture, 0);
+		glGenTextures(1, &effectDepthTexture);
+		glBindTexture(GL_TEXTURE_2D, effectDepthTexture);
+		glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, 2048, 1024);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, effectDepthTexture, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+		break;
 	}
 }
 
@@ -279,6 +321,30 @@ void RollerCoasterView::drawProgram(int program){
 		glUniform3fv(uMainLightDirection, 1 , mainLight->direction().data);
 		glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
 		drawGameObject(root, uMainModelMatrix, &uMainMtl);
+		break;
+	case progEffect:
+		if(isLine)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glBindFramebuffer(GL_FRAMEBUFFER, effectFBO);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(mainProgram);
+		glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
+		glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
+		glUniform3fv(uMainLightDirection, 1 , mainLight->direction().data);
+		glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
+		drawGameObject(root, uMainModelMatrix, &uMainMtl);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(effectProgram);
+		glUniform1i(uEffectMode, effectMode);
+		glUniform1f(uEffectTime,frameNumber/30.);
+		glUniform2f(uEffectResolution,width,height);
+		glUniform2f(uEffectMouse,(float)mMPX/width,1-(float)mMPY/height);
+		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture(GL_TEXTURE_2D, effectTexture);
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 		break;
 	case progShadow:
 		// Time varying light position
@@ -329,7 +395,7 @@ void RollerCoasterView::drawProgram(int program){
 
 		glViewport(0,0,width,height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(ShadowMainProgram);
+		glUseProgram(shadowMainProgram);
 		glUniformMatrix4fv(uShadowMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
 		glUniformMatrix4fv(uShadowMainProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
 		glUniform3fv(uShadowMainLightDirection, 1 , mainLight->direction().data);

@@ -69,6 +69,7 @@ public:
 	Track track;
 	GameObject root;
 	bool isLine;
+	unsigned int effectMode;
 
 protected:
 
@@ -79,6 +80,8 @@ private:
 
 	int mPPX;//mouse press position X
 	int mPPY;//mouse press position Y
+	int mMPX;//mouse move position X
+	int mMPY;//mouse move position Y
 	vec3 mPCP;//mouse press camera position
 	vec3 mPCR;//mouse press camera rotation
 
@@ -91,7 +94,7 @@ private:
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
 //	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
-	enum {progMain, progShadow, progToon};
+	enum {progMain, progShadow, progEffect, progToon};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
@@ -104,7 +107,7 @@ private:
 	GLuint uMainEyePosition;
 	uniformMtl uMainMtl;
 
-	GLuint ShadowMainProgram;
+	GLuint shadowMainProgram;
 	GLuint uShadowMainModelMatrix;
 	GLuint uShadowMainViewMatrix;
 	GLuint uShadowMainProjectionMatrix;
@@ -118,6 +121,15 @@ private:
 	GLuint uShadowMapVPMatrix;
 	GLuint shadowMapTexture;
 	GLuint shadowMapFBO;
+
+	GLuint effectProgram;
+	GLuint uEffectMode;
+	GLuint uEffectTime;
+	GLuint uEffectResolution;
+	GLuint uEffectMouse;
+	GLuint effectTexture;
+	GLuint effectDepthTexture;
+	GLuint effectFBO;
 };
 
 #endif // ROLLERCOASTERVIEW_H

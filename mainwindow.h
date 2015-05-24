@@ -40,6 +40,8 @@ private slots:
 
 	void on_pushButton_Delete_clicked();
 
+	void on_comboBox_activated(int index);
+
 private:
 	Ui::MainWindow *ui;
 };

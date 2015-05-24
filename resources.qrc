@@ -1,16 +1,19 @@
 <RCC>
     <qresource prefix="/shaders">
-        <file>main.frag</file>
-        <file>main.vert</file>
-        <file>shadowMain.frag</file>
-        <file>shadowMain.vert</file>
-        <file>shadowMap.frag</file>
-        <file>shadowMap.vert</file>
+        <file alias="effect.frag">shaders/effect.frag</file>
+        <file alias="effect.vert">shaders/effect.vert</file>
+        <file alias="main.frag">shaders/main.frag</file>
+        <file alias="main.vert">shaders/main.vert</file>
+        <file alias="shadowMain.frag">shaders/shadowMain.frag</file>
+        <file alias="shadowMain.vert">shaders/shadowMain.vert</file>
+        <file alias="shadowMap.frag">shaders/shadowMap.frag</file>
+        <file alias="shadowMap.vert">shaders/shadowMap.vert</file>
     </qresource>
     <qresource prefix="/models">
-        <file>floor.mtl</file>
-        <file>floor.obj</file>
-        <file>controlPoint.mtl</file>
-        <file>controlPoint.obj</file>
+        <file alias="controlPoint.mtl">model/controlPoint.mtl</file>
+        <file alias="controlPoint.obj">model/controlPoint.obj</file>
+        <file alias="floor.mtl">model/floor.mtl</file>
+        <file alias="floor.obj">model/floor.obj</file>
+        <file alias="green.jpg">model/floor.jpg</file>
     </qresource>
 </RCC>

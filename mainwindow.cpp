@@ -97,3 +97,8 @@ void MainWindow::on_pushButton_Delete_clicked()
 	ui->openGLWidget->track.removePoint(-1);
 	ui->openGLWidget->track.update();
 }
+
+void MainWindow::on_comboBox_activated(int index)
+{
+	ui->openGLWidget->effectMode = index;
+}

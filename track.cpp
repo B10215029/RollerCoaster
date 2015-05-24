@@ -47,8 +47,6 @@ Track::~Track(){
 }
 
 void Track::update(){
-	for(int i=0;i<trainPos.size();++i)
-		trainPos[i] = 0;
 	getTrackLength();
 	mesh->clear();
 	mesh->materialName.insert(QString("steel"), mesh->materialName.size());
@@ -161,16 +159,14 @@ void Track::update(){
 			}
 		}
 		for(int i=0;i<controlPoints.size();i++){
-			Transform sp = getCurvePosition(0, i);
-			Transform ep;
 			float currentTrackLength = trackLength[i]-(i==0?0:trackLength[i-1]);
 			for(int j=1;j<currentTrackLength/10;++j){
-				ep = getCurvePosition(10/currentTrackLength*(j+1), i);
-				mat4 rm = ep.rotateMat();
-				mesh->vertices.push_back(ep.position+vec3( 5, 0, 1)*rm);
-				mesh->vertices.push_back(ep.position+vec3(-5, 0, 1)*rm);
-				mesh->vertices.push_back(ep.position+vec3(-5, 0,-1)*rm);
-				mesh->vertices.push_back(ep.position+vec3( 5, 0,-1)*rm);
+				Transform sp = getCurvePosition(10/currentTrackLength*j, i);
+				mat4 rm = sp.rotateMat();
+				mesh->vertices.push_back(sp.position+vec3( 5, 0, 1)*rm);
+				mesh->vertices.push_back(sp.position+vec3(-5, 0, 1)*rm);
+				mesh->vertices.push_back(sp.position+vec3(-5, 0,-1)*rm);
+				mesh->vertices.push_back(sp.position+vec3( 5, 0,-1)*rm);
 				for(int k=0;k<8;++k){
 					QVector<VerticesData> face1,face2;
 					VerticesData v0 = {mesh->vertices.size() -4, -1, 1};
@@ -186,7 +182,6 @@ void Track::update(){
 					mesh->faces[1].push_back(face1);
 					mesh->faces[1].push_back(face2);
 				}
-				sp = ep;
 			}
 		}
 		mesh->update();
@@ -326,6 +321,8 @@ void Track::loadFile(QString filePath){
 		deleteChild(controlPoints[i]);
 		delete controlPoints[i];
 	}
+	for(int i=0;i<trainPos.size();++i)
+		trainPos[i] = 0;
 	controlPoints.clear();
 	while(!data.atEnd()){
 		vec3 pos,rot;
