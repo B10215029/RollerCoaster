@@ -22,7 +22,7 @@ public:
 	void removePoint(int pointID);
 	void addTrain();
 	void removeTrain();
-	void setTrainModel(int modelID);
+	void setTrain(int trainID, int modelID, float pos);
 	void animation(float t);
 
 	enum {LineType, TrackType, RoadType};

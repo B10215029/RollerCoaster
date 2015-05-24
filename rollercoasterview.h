@@ -28,6 +28,7 @@ class RollerCoasterView : public QOpenGLWidget, protected QOpenGLFunctions_4_3_C
 public:
 	RollerCoasterView(QWidget *parent);
 	~RollerCoasterView();
+	void select(int selID);
 
 signals:
 	void getLastFPS(QString);
@@ -36,7 +37,7 @@ protected:
 	void initProgram(int program);
 	void drawProgram(int program);
 	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, Transform p=Transform());
-
+//	void drawID(GameObject &o, Transform p=Transform());
 
 	//Event
 	void mousePressEvent(QMouseEvent *event);
@@ -70,6 +71,8 @@ public:
 	GameObject root;
 	bool isLine;
 	unsigned int effectMode;
+	float runTime;
+	int selectCP;
 
 protected:
 
@@ -84,6 +87,7 @@ private:
 	int mMPY;//mouse move position Y
 	vec3 mPCP;//mouse press camera position
 	vec3 mPCR;//mouse press camera rotation
+	vec3 mPCPP;//mouse press control point position
 
 
 	//OpenGL
@@ -94,7 +98,7 @@ private:
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
 //	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
-	enum {progMain, progShadow, progEffect, progToon};
+	enum {progMain, progShadow, progEffect, progID};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
@@ -130,6 +134,14 @@ private:
 	GLuint effectTexture;
 	GLuint effectDepthTexture;
 	GLuint effectFBO;
+
+//	GLuint IDProgram;
+//	GLuint uIDModelMatrix;
+//	GLuint uIDViewMatrix;
+//	GLuint uIDProjectionMatrix;
+//	GLuint uID;
+//	GLuint IDTexture;
+//	GLuint IDFBO;
 };
 
 #endif // ROLLERCOASTERVIEW_H

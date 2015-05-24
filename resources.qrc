@@ -8,6 +8,8 @@
         <file alias="shadowMain.vert">shaders/shadowMain.vert</file>
         <file alias="shadowMap.frag">shaders/shadowMap.frag</file>
         <file alias="shadowMap.vert">shaders/shadowMap.vert</file>
+        <file alias="drawID.frag">shaders/drawID.frag</file>
+        <file alias="drawID.vert">shaders/drawID.vert</file>
     </qresource>
     <qresource prefix="/models">
         <file alias="controlPoint.mtl">model/controlPoint.mtl</file>
@@ -15,5 +17,7 @@
         <file alias="floor.mtl">model/floor.mtl</file>
         <file alias="floor.obj">model/floor.obj</file>
         <file alias="green.jpg">model/floor.jpg</file>
+        <file alias="controlPoint2.mtl">model/controlPoint2.mtl</file>
+        <file alias="controlPoint2.obj">model/controlPoint2.obj</file>
     </qresource>
 </RCC>

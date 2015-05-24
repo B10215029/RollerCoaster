@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#define DEPTH_TEXTURE_SIZE 4096
+#define DEPTH_TEXTURE_SIZE 1000
 
 RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	TextureDB::init();
@@ -19,8 +19,8 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	a.mesh = &testm;
 	//a.scale=vec3(10,10,10);
 	//root.scale=vec3(10,10,10);
-	b.mesh = NULL;
-	b.position=vec3(0,300,50);
+//	b.mesh = NULL;
+//	b.position=vec3(0,300,50);
 	root.mesh = new Mesh(":/models/floor.obj");
 //	root.animationType = GameObject::AnimRotateY;
 //	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
@@ -30,11 +30,22 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	root.setChild(&track);
 	track.name = "Track";
 
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/TRAIN.obj"));
 	track.addTrain();
-	track.setTrainModel(0);
+	track.setTrain(0, 0, 0);
+	track.addTrain();
+	track.setTrain(1, 1, 50);
 	track.trains[0]->setChild(&a);
-	a.position = vec3(0, 1, -1);
+	a.position = vec3(1, 1, -1);
 	a.rotation = vec3(0, 180, 0);
+//	a.scale = vec3(10, 10, 10);
+//	a.animationType = GameObject::AnimRotateY;
+	b.mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
+	track.trains[0]->setChild(&b);
+	b.position = vec3(1, 1, 3);
+	b.rotation = vec3(0, 180, 0);
+	b.scale = vec3(0.07f, 0.07f, 0.07f);
 
 //	mainCamera = &track.trainCamera;
 	//a.setChild(&b);
@@ -47,17 +58,27 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldCamera.rotation = vec3(-45,0,0);
 	worldCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
 
-	worldLight.position = vec3(0.0f, 100.0f, 100.0f);
+	worldLight.position = vec3(0.0f, 100.0f, 0.0f);
 	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
-	worldLight.setFrustum(-500, 500, -500, 500, -1000, 1000);
+	worldLight.setFrustum(-100, 100, -100, 100, -1000, 1000);
 
 	isLine = false;
 	effectMode = 0;
+	runTime = 0;
 	frameNumber = 0;
+	selectCP = -1;
 }
 
 RollerCoasterView::~RollerCoasterView(){
 
+}
+
+void RollerCoasterView::select(int selID){
+	if(selectCP!=-1)
+		track.controlPoints[selectCP]->mesh = &track.controlPointMesh;
+	if(selID!=-1)
+		track.controlPoints[selID]->mesh = &track.selectControlPointMesh;
+	selectCP = selID;
 }
 
 void RollerCoasterView::mousePressEvent(QMouseEvent *event){
@@ -65,6 +86,14 @@ void RollerCoasterView::mousePressEvent(QMouseEvent *event){
 	mPPY=event->y();
 	mPCP=worldCamera.position;
 	mPCR=worldCamera.rotation;
+	if(event->buttons().testFlag(Qt::RightButton)&&selectCP!=-1){
+		mPCPP = track.controlPoints[selectCP]->position;
+	}
+//	if(event->buttons().testFlag(Qt::RightButton)){
+//		int* idtex;
+//		glGetTexImage(IDTexture, 0, GL_RED_INTEGER, GL_UNSIGNED_INT, idtex);
+//		int d = idtex[width*y()+event->x()];
+//	}
 }
 
 void RollerCoasterView::mouseReleaseEvent(QMouseEvent *event){
@@ -80,6 +109,12 @@ void RollerCoasterView::mouseMoveEvent(QMouseEvent *event){
 	if(event->buttons().testFlag(Qt::LeftButton)){
 		worldCamera.rotation.x()=mPCR.x()+(mPPY-event->y())/5.0f;
 		worldCamera.rotation.y()=mPCR.y()+(mPPX-event->x())/5.0f;
+	}
+	if(event->buttons().testFlag(Qt::RightButton)){
+		if(selectCP!=-1){
+			track.controlPoints[selectCP]->position=mPCPP+mainCamera->rotateMat()*vec3(-(mPPX-event->x())*worldCamera.top/300.0f,(mPPY-event->y())*worldCamera.top/300.0f,0);
+			track.update();
+		}
 	}
 }
 
@@ -127,7 +162,7 @@ void RollerCoasterView::keyPressEvent(QKeyEvent *event){
 		worldCamera.rotation.z()+=5.0f;
 		break;
 	case Qt::Key_Backspace:
-		frameNumber = 0;
+		runTime = 0;
 		break;
 	default:
 		if(event->key()==Qt::Key_Q)
@@ -169,6 +204,7 @@ void RollerCoasterView::initializeGL(){
 	initProgram(progMain);
 	initProgram(progShadow);
 	initProgram(progEffect);
+//	initProgram(progID);
 
 	for(int i=0;i<TextureDB::ID.size();++i){
 		glGenTextures(1, &TextureDB::ID[i]);
@@ -196,6 +232,14 @@ void RollerCoasterView::resizeGL(int w, int h){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, effectTexture, 0);
+//	glBindFramebuffer(GL_FRAMEBUFFER, IDFBO);
+//	glDeleteTextures(1, &IDTexture);
+//	glGenTextures(1, &IDTexture);
+//	glBindTexture(GL_TEXTURE_2D, IDTexture);
+//	glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32UI, w, h);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, IDTexture, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0 );
 }
@@ -206,12 +250,14 @@ void RollerCoasterView::paintGL(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(VAOs[modelVAO]);
 //	drawProgram(progMain);
-	drawProgram(progShadow);
-//	drawProgram(progEffect);
+//	drawProgram(progShadow);
+	drawProgram(progEffect);
+//	drawProgram(progID);
 	glBindVertexArray(0);
 
 
 	frameNumber++;
+	runTime+=elapsedTime.elapsed()/1000.;
 	emit getLastFPS(QString("FPS:%1 --FN:%2").arg(int(1000./(elapsedTime.elapsed()))).arg(frameNumber));
 	elapsedTime.restart();
 	this->update();
@@ -254,30 +300,21 @@ void RollerCoasterView::initProgram(int program){
 		uShadowMapMMatrix	 = glGetUniformLocation(shadowMapProgram, "MMatrix");
 		uShadowMapVPMatrix	 = glGetUniformLocation(shadowMapProgram, "VPMatrix");
 
-		// Create a depth texture
-		glGenTextures(1, &shadowMapTexture);
-		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
-		// Allocate storage for the texture data
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-//		glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
-		// Set the default filtering modes
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Set up depth comparison mode
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-		// Set up wrapping modes
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		// Create FBO to render depth into
 		glGenFramebuffers(1, &shadowMapFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
-		// Attach the depth texture to it
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, shadowMapTexture, 0);
-		// Disable color rendering as there are no color attachments
-//		glDrawBuffer(GL_NONE);
+		glGenTextures(1, &shadowMapTexture);
+		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+//		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, shadowMapTexture, 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapTexture, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		break;
@@ -309,6 +346,24 @@ void RollerCoasterView::initProgram(int program){
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 		break;
+//	case progID:
+//		IDProgram = loadShaders(":/shaders/drawID.vert",":/shaders/drawID.frag");
+//		glUseProgram(IDProgram);
+//		uIDModelMatrix		 = glGetUniformLocation(IDProgram, "modelMatrix");
+//		uIDViewMatrix		 = glGetUniformLocation(IDProgram, "viewMatrix");
+//		uIDProjectionMatrix	 = glGetUniformLocation(IDProgram, "projectionMatrix");
+//		uID					 = glGetUniformLocation(IDProgram, "ID");
+//		glGenFramebuffers( 1, &IDFBO );
+//		glBindFramebuffer( GL_FRAMEBUFFER, IDFBO );
+//		glGenTextures(1, &IDTexture);
+//		glBindTexture(GL_TEXTURE_2D, IDTexture);
+//		glTexStorage2D(GL_TEXTURE_2D, 1, GL_R32UI, width, height);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, IDTexture, 0);
+//		glBindTexture(GL_TEXTURE_2D, 0);
+//		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+//		break;
 	}
 }
 
@@ -339,13 +394,21 @@ void RollerCoasterView::drawProgram(int program){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(effectProgram);
 		glUniform1i(uEffectMode, effectMode);
-		glUniform1f(uEffectTime,frameNumber/30.);
+		glUniform1f(uEffectTime,runTime);
 		glUniform2f(uEffectResolution,width,height);
 		glUniform2f(uEffectMouse,(float)mMPX/width,1-(float)mMPY/height);
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture(GL_TEXTURE_2D, effectTexture);
 		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 		break;
+//	case progID:
+//		glBindFramebuffer(GL_FRAMEBUFFER, IDFBO);
+//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//		glUseProgram(IDProgram);
+//		glUniformMatrix4fv(uIDViewMatrix, 1, GL_FALSE, mainCamera->view().data);
+//		glUniformMatrix4fv(uIDProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
+//		drawID(root);
+//		break;
 	case progShadow:
 		// Time varying light position
 //		vec3 light_position = mainLight->position;
@@ -445,8 +508,24 @@ void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uM
 	}
 	for(int i=0;i<o.children.size();++i)
 		drawGameObject(*o.children[i], uMM, uMtl, p+o);
-	o.animation(frameNumber);
+	o.animation(runTime);
 }
+
+//void RollerCoasterView::drawID(GameObject &o, Transform p){
+//	if(o.mesh){
+//		glUniformMatrix4fv(uIDModelMatrix, 1, GL_FALSE, (o.modelMat()*p.modelMat()).data);
+//		glUniform1i(uID, o.id);
+//		for(int i=0;i<o.mesh->materials.size();++i){
+//			glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+//			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*o.mesh->faces[i].size()*3*3, o.mesh->mtlFV[i], GL_STATIC_DRAW);
+//			glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+//			glBindBuffer(GL_ARRAY_BUFFER, 0);
+//			glDrawArrays(GL_TRIANGLES, 0, o.mesh->faces[i].size()*3);
+//		}
+//	}
+//	for(int i=0;i<o.children.size();++i)
+//		drawID(*o.children[i], p+o);
+//}
 
 GLuint RollerCoasterView::loadShaders(const char* vertexFilePath, const char* fragmentFilePath){
 	GLuint program;

@@ -16,23 +16,17 @@
 Track::Track():GameObject(){
 	mesh = new Mesh();
 	controlPointMesh.loadOBJ(":/models/controlPoint.obj");
-	trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
+	selectControlPointMesh.loadOBJ(":/models/controlPoint2.obj");
 	controlPoints.clear();
 	trains.clear();
 	trackType = TrackType;
 	curveType = CardinalType;
-//	curveType = CubicType;
 	driving = true;
 	addPoint(vec3(50, 10, 0));
 	addPoint(vec3(0, 10, 50));
 	addPoint(vec3(-50, 10, 0));
 	addPoint(vec3(0, 10, -50));
-//	trackType = LineType;
-//	curveType = LinearType;
-//	trackType = TrackType;
-//	loadFile(QString("C:/Users/Delin/Desktop/Train2008/TrackFiles/spiral.txt"));
-
-	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
+//	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
 	update();
 }
 
@@ -321,8 +315,6 @@ void Track::loadFile(QString filePath){
 		deleteChild(controlPoints[i]);
 		delete controlPoints[i];
 	}
-	for(int i=0;i<trainPos.size();++i)
-		trainPos[i] = 0;
 	controlPoints.clear();
 	while(!data.atEnd()){
 		vec3 pos,rot;
@@ -386,17 +378,25 @@ void Track::addPoint(vec3 pos, vec3 rot){
 }
 
 void Track::removePoint(int pointID){
-	for(int i=0;i<controlPoints.size();++i){
-		if(controlPoints[i]->id == pointID){
-			deleteChild(controlPoints[i]);
-			delete controlPoints[i];
-			controlPoints.remove(i);
-			return;
-		}
+//	for(int i=0;i<controlPoints.size();++i){
+//		if(controlPoints[i]->id == pointID){
+//			deleteChild(controlPoints[i]);
+//			delete controlPoints[i];
+//			controlPoints.remove(i);
+//			return;
+//		}
+//	}
+	if(controlPoints.size()<=4) return;
+	if(pointID>=0 && pointID<controlPoints.size()){
+		deleteChild(controlPoints[pointID]);
+		delete controlPoints[pointID];
+		controlPoints.remove(pointID);
 	}
-	deleteChild(controlPoints.last());
-	delete controlPoints.last();
-	controlPoints.pop_back();
+	else{
+		deleteChild(controlPoints.last());
+		delete controlPoints.last();
+		controlPoints.pop_back();
+	}
 }
 
 void Track::addTrain(){
@@ -410,28 +410,30 @@ void Track::removeTrain(){
 
 }
 
-void Track::setTrainModel(int modelID){
-	for(int i=0;i<trains.size();++i){
-		trains[i]->mesh = trainModel[modelID];
-	}
+void Track::setTrain(int trainID, int modelID, float pos){
+	trains[trainID]->mesh = trainModel[modelID];
+	trainPos[trainID] = pos;
 }
 
 void Track::animation(float t){
 	if(!driving) return;
 	for(int i=0;i<trains.size();++i){
 		int p;
+		float lot=t*100+trainPos[i];
+		while(lot>trackLength.last())
+			lot-=trackLength.last();
 		for(p=0;p<trackLength.size();++p)
-			if(trackLength[p]>trainPos[i])
+			if(trackLength[p]>lot)
 				break;
-		float pt=trainPos[i]-(p==0?0:trackLength[p-1]);
+		float pt=lot-(p==0?0:trackLength[p-1]);
 		pt/=trackLength[p]-(p==0?0:trackLength[p-1]);
 		trains[i]->position = getCurvePosition(pt, p).position;
 		trains[i]->rotation = getCurvePosition(pt, p).rotation;
-		trainCamera.position = trains[i]->position;
-		trainCamera.rotation = trains[i]->rotation;// + vec3(0, 90, 0);
-		trainPos[i]+=1;
-		if(trainPos[i]>trackLength.last())
-			trainPos[i]-=trackLength.last();
+//		trainCamera.position = trains[i]->position;
+//		trainCamera.rotation = trains[i]->rotation;// + vec3(0, 90, 0);
+//		trainPos[i]=t*100+i*100;
+//		while(trainPos[i]>trackLength.last())
+//			trainPos[i]-=trackLength.last();
 	}
 
 }

@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 	//connect(ui->openGLWidget, SIGNAL(getLastFPS(QString)), ui->statusBar, SLOT(showMessage(QString)));
 	connect(ui->openGLWidget, SIGNAL(getLastFPS(QString)), ui->label, SLOT(setText(QString)));
+	ui->listWidget->insertItem(0, QString("X"));
+	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
+		ui->listWidget->insertItem(i+1, QString::number(i+1));
 }
 
 MainWindow::~MainWindow()
@@ -68,6 +71,10 @@ void MainWindow::on_actionLoad_Path_triggered()
 {
 	QString filePath = QFileDialog::getOpenFileName(this, "Load Path", "../", "Text(*.txt);;All(*)");
 	ui->openGLWidget->track.loadFile(filePath);
+	ui->listWidget->clear();
+	ui->listWidget->insertItem(0, QString("X"));
+	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
+		ui->listWidget->insertItem(i+1, QString::number(i+1));
 }
 
 void MainWindow::on_actionSave_Path_triggered()
@@ -90,15 +97,31 @@ void MainWindow::on_pushButton_Add_clicked()
 {
 	ui->openGLWidget->track.addPoint();
 	ui->openGLWidget->track.update();
+	ui->listWidget->clear();
+	ui->listWidget->insertItem(0, QString("X"));
+	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
+		ui->listWidget->insertItem(i+1, QString::number(i+1));
 }
 
 void MainWindow::on_pushButton_Delete_clicked()
 {
-	ui->openGLWidget->track.removePoint(-1);
+	if(ui->listWidget->selectedItems().size()>0&&ui->listWidget->selectedItems()[0]->text()!="X")
+		ui->openGLWidget->track.removePoint(ui->listWidget->selectedItems()[0]->text().toInt()-1);
+	else
+		ui->openGLWidget->track.removePoint(-1);
 	ui->openGLWidget->track.update();
+	ui->listWidget->clear();
+	ui->listWidget->insertItem(0, QString("X"));
+	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
+		ui->listWidget->insertItem(i+1, QString::number(i+1));
 }
 
 void MainWindow::on_comboBox_activated(int index)
 {
 	ui->openGLWidget->effectMode = index;
+}
+
+void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+	ui->openGLWidget->select(item->text().toInt()-1);
 }

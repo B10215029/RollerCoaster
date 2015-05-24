@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 
 namespace Ui {
 class MainWindow;
@@ -41,6 +42,8 @@ private slots:
 	void on_pushButton_Delete_clicked();
 
 	void on_comboBox_activated(int index);
+
+	void on_listWidget_itemClicked(QListWidgetItem *item);
 
 private:
 	Ui::MainWindow *ui;
