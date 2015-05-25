@@ -12,8 +12,8 @@ public:
 	Transform(const vec3& p, const vec3& r);
 	Transform(const vec3& p, const vec3& r, const vec3& s);
 	~Transform();
-	Transform operator+(const Transform &a) const;
-	Transform operator-(const Transform &a) const;
+	Transform operator+(Transform &a);
+	Transform operator-(const Transform &a);
 	mat4 translateMat();
 	mat4 scaleMat();
 	mat4 rotateMat();

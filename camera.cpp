@@ -104,6 +104,38 @@ mat4 Camera::view(){
 	return result;
 }
 
+mat4 Camera::skyViewMat(){
+	mat4 p;
+	if(aspect<1){
+		p.data[0] = 2.0 / 1200/aspect;
+		p.data[5] = 2.0 / 1200;
+	}
+	else{
+		p.data[0] = 2.0 / 1200;
+		p.data[5] = 2.0 / 1200*aspect;
+	}
+	p.data[10] = 0;
+	p.data[15] = 1;
+	mat4 trm = translateMat() * rotateMat();
+	vec3 f = trm * vec3(0, 0, 1);
+	vec3 u = trm * vec3(0, 1, 0);
+	vec3 s = trm * vec3(1, 0, 0);
+	mat4 v(1);
+	v.data[0] = s.x();
+	v.data[4] = s.y();
+	v.data[8] = s.z();
+	v.data[1] = u.x();
+	v.data[5] = u.y();
+	v.data[9] = u.z();
+	v.data[2] = f.x();
+	v.data[6] = f.y();
+	v.data[10] = f.z();
+	v.data[12] = 0;
+	v.data[13] = 0;
+	v.data[14] = 0;
+	return v*p;
+}
+
 void Camera::setFrustum(float left, float right, float bottom, float top, float zNear, float zFar){
 	this->left = left;
 	this->right = right;

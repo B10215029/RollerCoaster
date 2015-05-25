@@ -411,6 +411,46 @@ void Track::removeTrain(){
 }
 
 void Track::setTrain(int trainID, int modelID, float pos){
+	if(modelID == 100){
+		trains[trainID]->mesh = NULL;
+		trains[trainID]->setChild(new GameObject());
+		trains[trainID]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->children[1]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->children[2]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->children[3]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->children[4]->setChild(new GameObject());
+		trains[trainID]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/body.obj");
+		trains[trainID]->children[0]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/head.obj");
+		trains[trainID]->children[0]->children[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/handUL.obj");
+		trains[trainID]->children[0]->children[0]->children[2]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/handUR.obj");
+		trains[trainID]->children[0]->children[0]->children[1]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/handDL.obj");
+		trains[trainID]->children[0]->children[0]->children[2]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/handDR.obj");
+		trains[trainID]->children[0]->children[0]->children[3]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/footUL.obj");
+		trains[trainID]->children[0]->children[0]->children[4]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/footUR.obj");
+		trains[trainID]->children[0]->children[0]->children[3]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/footDL.obj");
+		trains[trainID]->children[0]->children[0]->children[4]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/robot/footDR.obj");
+		trains[trainID]->children[0]->children[0]->position = vec3(0,0,0);
+		trains[trainID]->children[0]->children[0]->children[0]->position = vec3(0,3.122,-0.809);
+		trains[trainID]->children[0]->children[0]->children[1]->position = vec3(3.093,1.496,0.316);
+		trains[trainID]->children[0]->children[0]->children[2]->position = vec3(-3.057,1.511,0.308);
+		trains[trainID]->children[0]->children[0]->children[1]->children[0]->position = vec3(1.541,-3.31,0);
+		trains[trainID]->children[0]->children[0]->children[2]->children[0]->position = vec3(-1.58,-3.341,0);
+		trains[trainID]->children[0]->children[0]->children[3]->position = vec3(1.954,-3.699,-0.124);
+		trains[trainID]->children[0]->children[0]->children[4]->position = vec3(-1.954,-3.699,-0.124);
+		trains[trainID]->children[0]->children[0]->children[3]->children[0]->position = vec3(0.428,-4.586,0.118);
+		trains[trainID]->children[0]->children[0]->children[4]->children[0]->position = vec3(-0.428,-4.586,0.118);
+		trains[trainID]->children[0]->position = vec3(0,12,0);
+		trains[trainID]->children[0]->rotation = vec3(0,180,0);
+		trains[trainID]->children[0]->animationType = GameObject::AnimRobot;
+		trains[trainID]->children[0]->name = QString("robot");
+		trainPos[trainID] = pos;
+		return;
+	}
 	trains[trainID]->mesh = trainModel[modelID];
 	trainPos[trainID] = pos;
 }

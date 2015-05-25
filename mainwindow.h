@@ -45,6 +45,8 @@ private slots:
 
 	void on_listWidget_itemClicked(QListWidgetItem *item);
 
+	void on_actionChang_sky_triggered();
+
 private:
 	Ui::MainWindow *ui;
 };

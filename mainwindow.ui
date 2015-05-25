@@ -377,6 +377,7 @@
      <string>Setting</string>
     </property>
     <addaction name="actionLine"/>
+    <addaction name="actionChang_sky"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
@@ -403,6 +404,11 @@
    </property>
    <property name="text">
     <string>Line</string>
+   </property>
+  </action>
+  <action name="actionChang_sky">
+   <property name="text">
+    <string>ChangSky</string>
    </property>
   </action>
  </widget>

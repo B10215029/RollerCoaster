@@ -15,6 +15,7 @@ public:
 	mat4 projectionMat();
 	mat4 lookAt(vec3 center, vec3 up);
 	mat4 view();
+	mat4 skyViewMat();
 	void setFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
 	void setPerspective(float fov, float aspect, float zNear, float zFar);
 	bool isPerspective;

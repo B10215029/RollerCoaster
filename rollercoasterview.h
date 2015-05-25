@@ -36,7 +36,7 @@ signals:
 protected:
 	void initProgram(int program);
 	void drawProgram(int program);
-	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, Transform p=Transform());
+	void drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl=NULL, mat4 pm=mat4(1));
 //	void drawID(GameObject &o, Transform p=Transform());
 
 	//Event
@@ -73,6 +73,8 @@ public:
 	unsigned int effectMode;
 	float runTime;
 	int selectCP;
+	QVector<int> skyTexture;
+	int nowSkyTexture;
 
 protected:
 
@@ -98,7 +100,7 @@ private:
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
 //	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
-	enum {progMain, progShadow, progEffect, progID};
+	enum {progMain, progShadow, progEffect, progID, progSkyBox};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
@@ -142,6 +144,10 @@ private:
 //	GLuint uID;
 //	GLuint IDTexture;
 //	GLuint IDFBO;
+
+	GLuint skyBoxProgram;
+	GLuint uSkyBoxMVPMatrix;
+	Mesh skyBoxMesh;
 };
 
 #endif // ROLLERCOASTERVIEW_H

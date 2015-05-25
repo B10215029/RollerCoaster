@@ -22,6 +22,7 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 //	b.mesh = NULL;
 //	b.position=vec3(0,300,50);
 	root.mesh = new Mesh(":/models/floor.obj");
+//	root.mesh = new Mesh("C:/Users/Delin/Desktop/skybox.obj");
 //	root.animationType = GameObject::AnimRotateY;
 //	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
 //	a.setParent(&root);
@@ -35,7 +36,7 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	track.addTrain();
 	track.setTrain(0, 0, 0);
 	track.addTrain();
-	track.setTrain(1, 1, 50);
+	track.setTrain(1, 100, 50);
 	track.trains[0]->setChild(&a);
 	a.position = vec3(1, 1, -1);
 	a.rotation = vec3(0, 180, 0);
@@ -51,8 +52,9 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	//a.setChild(&b);
 	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
 	//testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
-	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
 	//testm.loadOBJ("C:/Users/Delin/Desktop/74796_Jibril_by_jugapugz_zip/jibril_by_jugapugz.obj");
+	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
+	//testm.loadOBJ("C:/Users/Delin/Desktop/mod/Lumpy/Lumpy.obj");
 
 	worldCamera.position = vec3(0, 50, 20);
 	worldCamera.rotation = vec3(-45,0,0);
@@ -205,6 +207,7 @@ void RollerCoasterView::initializeGL(){
 	initProgram(progShadow);
 	initProgram(progEffect);
 //	initProgram(progID);
+	initProgram(progSkyBox);
 
 	for(int i=0;i<TextureDB::ID.size();++i){
 		glGenTextures(1, &TextureDB::ID[i]);
@@ -253,6 +256,7 @@ void RollerCoasterView::paintGL(){
 //	drawProgram(progShadow);
 	drawProgram(progEffect);
 //	drawProgram(progID);
+//	drawProgram(progSkyBox);
 	glBindVertexArray(0);
 
 
@@ -364,6 +368,17 @@ void RollerCoasterView::initProgram(int program){
 //		glBindTexture(GL_TEXTURE_2D, 0);
 //		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 //		break;
+	case progSkyBox:
+		skyBoxProgram = loadShaders(":/shaders/skyBox.vert",":/shaders/skyBox.frag");
+		glUseProgram(skyBoxProgram);
+		uSkyBoxMVPMatrix = glGetUniformLocation(skyBoxProgram, "MVPMatrix");
+		skyBoxMesh.loadOBJ("C:/Users/Delin/Desktop/skybox.obj");
+		nowSkyTexture = 0;
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky1.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky2.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky3.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky4.jpg"));
+		break;
 	}
 }
 
@@ -382,6 +397,7 @@ void RollerCoasterView::drawProgram(int program){
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBindFramebuffer(GL_FRAMEBUFFER, effectFBO);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		drawProgram(progSkyBox);
 		glUseProgram(mainProgram);
 		glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
 		glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
@@ -409,6 +425,24 @@ void RollerCoasterView::drawProgram(int program){
 //		glUniformMatrix4fv(uIDProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
 //		drawID(root);
 //		break;
+	case progSkyBox:
+		glUseProgram(skyBoxProgram);
+		glUniformMatrix4fv(uSkyBoxMVPMatrix, 1, GL_FALSE, mainCamera->skyViewMat().data);
+//		glUniformMatrix4fv(uSkyBoxMVPMatrix, 1, GL_FALSE, (mainCamera->view()*mainCamera->projectionMat()).data);
+		for(int i=0;i<skyBoxMesh.materials.size();++i){
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*skyBoxMesh.faces[i].size()*3*3, skyBoxMesh.mtlFV[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*skyBoxMesh.faces[i].size()*3*2, skyBoxMesh.mtlFT[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, TextureDB::ID[skyTexture[nowSkyTexture]]);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDrawArrays(GL_TRIANGLES, 0, skyBoxMesh.faces[i].size()*3);
+		}
+		glClear(GL_DEPTH_BUFFER_BIT);
+		break;
 	case progShadow:
 		// Time varying light position
 //		vec3 light_position = mainLight->position;
@@ -471,9 +505,10 @@ void RollerCoasterView::drawProgram(int program){
 	}
 }
 
-void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl, Transform p){
+void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uMtl, mat4 pm){
+	pm=o.modelMat()*pm;
 	if(o.mesh){
-		glUniformMatrix4fv(uMM, 1, GL_FALSE, (o.modelMat()*p.modelMat()).data);
+		glUniformMatrix4fv(uMM, 1, GL_FALSE, pm.data);
 		for(int i=0;i<o.mesh->materials.size();++i){
 //			glVertexAttribPointer自動偵測陣列大小錯誤(sizeof(float*)=4)
 //			不知如何直接指定glVertexAttribPointer大小只好先丟到VBO指定大小
@@ -507,7 +542,7 @@ void RollerCoasterView::drawGameObject(GameObject &o, GLuint uMM, uniformMtl* uM
 		}
 	}
 	for(int i=0;i<o.children.size();++i)
-		drawGameObject(*o.children[i], uMM, uMtl, p+o);
+		drawGameObject(*o.children[i], uMM, uMtl, pm);
 	o.animation(runTime);
 }
 

@@ -125,3 +125,8 @@ void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 {
 	ui->openGLWidget->select(item->text().toInt()-1);
 }
+
+void MainWindow::on_actionChang_sky_triggered()
+{
+	ui->openGLWidget->nowSkyTexture = (ui->openGLWidget->nowSkyTexture+1)%ui->openGLWidget->skyTexture.size();
+}

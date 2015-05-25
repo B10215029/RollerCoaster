@@ -36,10 +36,11 @@ public:
 		AnimRotateYB	= 0x008,
 		AnimRotateZ		= 0x010,
 		AnimRotateZB	= 0x020,
-		AnimTrain		= 0x040,
-		AnimCharIdle	= 0x080,
-		AnimCharWalk	= 0x100
+		AnimCharIdle	= 0x040,
+		AnimCharWalk	= 0x080,
+		AnimRobot		= 0x100
 	};
+	enum {BODY,HEAD,HANDUL,HANDUR,HANDDL,HANDDR,FOOTUL,FOOTUR,FOOTDL,FOOTDR,PARTNUM};
 };
 
 #endif // GAMEOBJECT_H

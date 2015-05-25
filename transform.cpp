@@ -40,9 +40,11 @@ Transform::~Transform()
 
 }
 
-Transform Transform::operator+(const Transform &a) const{
+Transform Transform::operator+(Transform &a){
 	Transform r;
 	r.position = position + a.position;
+//	mat4 rm = rotateMat();
+//	r.rotation = rotation + rm*vec3(a.rotation.x(),0,0) + rm*vec3(0,a.rotation.y(),0) + rm*vec3(0,0,a.rotation.z());
 	r.rotation = rotation + a.rotation;
 	r.scale.data[0] = scale.data[0] * a.scale.data[0];
 	r.scale.data[1] = scale.data[1] * a.scale.data[1];
@@ -50,10 +52,10 @@ Transform Transform::operator+(const Transform &a) const{
 	return r;
 }
 
-Transform Transform::operator-(const Transform &a) const{
+Transform Transform::operator-(const Transform &a){
 	Transform r;
 	r.position = position - a.position;
-	r.rotation = rotation - a.rotation;
+	//r.rotation = rotation - a.rotation;
 	r.scale.data[0] = scale.data[0] / a.scale.data[0];
 	r.scale.data[1] = scale.data[1] / a.scale.data[1];
 	r.scale.data[2] = scale.data[2] / a.scale.data[2];
