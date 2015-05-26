@@ -1,0 +1,68 @@
+newmtl Material__37
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.706546 0.747575 0.736911
+Ks 0.500000 0.500000 0.500000
+d 1.0
+newmtl ro4:blinn1SG
+illum 4
+Kd 0.42 0.81 0.95
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn2SG
+illum 4
+Kd 0.99 0.91 0.91
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn3SG
+illum 4
+Kd 0.98 0.74 0.10
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn4SG
+illum 4
+Kd 0.36 0.34 0.67
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn5SG
+illum 4
+Kd 1.00 1.00 0.75
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn6SG
+illum 4
+Kd 0.81 0.85 0.88
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:blinn7SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 0.06
+newmtl ro4:initialShadingGroup
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00

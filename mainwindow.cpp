@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QSound>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -101,6 +102,8 @@ void MainWindow::on_pushButton_Add_clicked()
 	ui->listWidget->insertItem(0, QString("X"));
 	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
 		ui->listWidget->insertItem(i+1, QString::number(i+1));
+	ui->openGLWidget->select(ui->openGLWidget->track.controlPoints.size()-1);
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/add.wav");
 }
 
 void MainWindow::on_pushButton_Delete_clicked()
@@ -114,6 +117,8 @@ void MainWindow::on_pushButton_Delete_clicked()
 	ui->listWidget->insertItem(0, QString("X"));
 	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
 		ui->listWidget->insertItem(i+1, QString::number(i+1));
+	ui->openGLWidget->selectCP = -1;
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/delete.wav");
 }
 
 void MainWindow::on_comboBox_activated(int index)
@@ -124,9 +129,23 @@ void MainWindow::on_comboBox_activated(int index)
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 {
 	ui->openGLWidget->select(item->text().toInt()-1);
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/select.wav");
 }
 
 void MainWindow::on_actionChang_sky_triggered()
 {
 	ui->openGLWidget->nowSkyTexture = (ui->openGLWidget->nowSkyTexture+1)%ui->openGLWidget->skyTexture.size();
+}
+
+void MainWindow::on_actionTrainView_triggered()
+{
+	if(ui->openGLWidget->mainCamera == &ui->openGLWidget->worldCamera)
+		ui->openGLWidget->mainCamera = &ui->openGLWidget->trainCamera;
+	else
+		ui->openGLWidget->mainCamera = &ui->openGLWidget->worldCamera;
+}
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+	ui->openGLWidget->track.trainSpeed = value;
 }

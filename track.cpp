@@ -22,6 +22,7 @@ Track::Track():GameObject(){
 	trackType = TrackType;
 	curveType = CardinalType;
 	driving = true;
+	trainSpeed = 100;
 	addPoint(vec3(50, 10, 0));
 	addPoint(vec3(0, 10, 50));
 	addPoint(vec3(-50, 10, 0));
@@ -459,7 +460,7 @@ void Track::animation(float t){
 	if(!driving) return;
 	for(int i=0;i<trains.size();++i){
 		int p;
-		float lot=t*100+trainPos[i];
+		float lot=t*trainSpeed+trainPos[i];
 		while(lot>trackLength.last())
 			lot-=trackLength.last();
 		for(p=0;p<trackLength.size();++p)

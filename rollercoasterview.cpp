@@ -15,60 +15,46 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight = Light();
 	mainCamera = &worldCamera;
 	mainLight = &worldLight;
-//	mainCamera = &worldLight;
-	a.mesh = &testm;
-	//a.scale=vec3(10,10,10);
-	//root.scale=vec3(10,10,10);
-//	b.mesh = NULL;
-//	b.position=vec3(0,300,50);
-	root.mesh = new Mesh(":/models/floor.obj");
-//	root.mesh = new Mesh("C:/Users/Delin/Desktop/skybox.obj");
-//	root.animationType = GameObject::AnimRotateY;
-//	root.mesh = new Mesh("C:/Users/Delin/Desktop/car.obj");
-//	a.setParent(&root);
-
-
-	root.setChild(&track);
-	track.name = "Track";
-
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/TRAIN.obj"));
-	track.addTrain();
-	track.setTrain(0, 0, 0);
-	track.addTrain();
-	track.setTrain(1, 100, 50);
-	track.trains[0]->setChild(&a);
-	a.position = vec3(1, 1, -1);
-	a.rotation = vec3(0, 180, 0);
-//	a.scale = vec3(10, 10, 10);
-//	a.animationType = GameObject::AnimRotateY;
-	b.mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
-	track.trains[0]->setChild(&b);
-	b.position = vec3(1, 1, 3);
-	b.rotation = vec3(0, 180, 0);
-	b.scale = vec3(0.07f, 0.07f, 0.07f);
-
-//	mainCamera = &track.trainCamera;
-	//a.setChild(&b);
-	//testm.loadOBJ("C:/Users/Delin/Desktop/66899_kirby/kirby/kirby2.obj");
-	//testm.loadOBJ("C:/Users/Delin/Desktop/model/Deadpool/DeadPool.obj");
-	//testm.loadOBJ("C:/Users/Delin/Desktop/74796_Jibril_by_jugapugz_zip/jibril_by_jugapugz.obj");
-	testm.loadOBJ("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
-	//testm.loadOBJ("C:/Users/Delin/Desktop/mod/Lumpy/Lumpy.obj");
-
-	worldCamera.position = vec3(0, 50, 20);
-	worldCamera.rotation = vec3(-45,0,0);
-	worldCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
-
-	worldLight.position = vec3(0.0f, 100.0f, 0.0f);
-	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
-	worldLight.setFrustum(-100, 100, -100, 100, -1000, 1000);
-
+//set parameter
 	isLine = false;
 	effectMode = 0;
 	runTime = 0;
 	frameNumber = 0;
 	selectCP = -1;
+//set camera
+	worldCamera.position = vec3(0, 50, 20);
+	worldCamera.rotation = vec3(-45,0,0);
+	worldCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
+	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
+	trainCamera.isPerspective = true;
+//set light
+	worldLight.position = vec3(0.0f, 100.0f, 0.0f);
+	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
+	worldLight.setFrustum(-100, 100, -100, 100, -1000, 1000);
+//set sence
+	root.mesh = new Mesh(":/models/floor.obj");
+//set track
+	root.setChild(&track);
+	track.name = "Track";
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/TRAIN1.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/BlendSwapTrain.obj"));
+//set train
+	track.addTrain();
+	track.setTrain(0, 0, 0);
+	track.addTrain();
+	track.setTrain(1, 100, 50);
+//set train 1 passenger 1
+	track.trains[0]->setChild(new GameObject());
+	track.trains[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
+	track.trains[0]->children[0]->position = vec3(1, 1, -1);
+	track.trains[0]->children[0]->rotation = vec3(0, 180, 0);
+//set train 1 passenger 2
+	track.trains[0]->setChild(new GameObject());
+	track.trains[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
+	track.trains[0]->children[1]->position = vec3(1, 1, 3);
+	track.trains[0]->children[1]->rotation = vec3(0, 180, 0);
+	track.trains[0]->children[1]->scale = vec3(0.07f, 0.07f, 0.07f);
 }
 
 RollerCoasterView::~RollerCoasterView(){
@@ -259,7 +245,8 @@ void RollerCoasterView::paintGL(){
 //	drawProgram(progSkyBox);
 	glBindVertexArray(0);
 
-
+	trainCamera.position = track.trains[0]->position + vec3(0,5,0)*track.trains[0]->rotateMat();
+	trainCamera.rotation = track.trains[0]->rotation*-1 + vec3(-10,0,0);
 	frameNumber++;
 	runTime+=elapsedTime.elapsed()/1000.;
 	emit getLastFPS(QString("FPS:%1 --FN:%2").arg(int(1000./(elapsedTime.elapsed()))).arg(frameNumber));

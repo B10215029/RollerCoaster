@@ -38,6 +38,7 @@ public:
 	QVector<Mesh*> trainModel;
 	QVector<float> trackLength;
 	bool driving;
+	float trainSpeed;
 };
 
 #endif // TRACK_H

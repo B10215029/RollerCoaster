@@ -347,8 +347,20 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="maximum">
+       <number>1000</number>
+      </property>
+      <property name="value">
+       <number>100</number>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="tickPosition">
+       <enum>QSlider::TicksAbove</enum>
+      </property>
+      <property name="tickInterval">
+       <number>100</number>
       </property>
      </widget>
     </item>
@@ -378,6 +390,7 @@
     </property>
     <addaction name="actionLine"/>
     <addaction name="actionChang_sky"/>
+    <addaction name="actionTrainView"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
@@ -409,6 +422,11 @@
   <action name="actionChang_sky">
    <property name="text">
     <string>ChangSky</string>
+   </property>
+  </action>
+  <action name="actionTrainView">
+   <property name="text">
+    <string>TrainView</string>
    </property>
   </action>
  </widget>

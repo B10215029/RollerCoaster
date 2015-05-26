@@ -57,18 +57,14 @@ private:
 
 //variable
 public:
+	Camera worldCamera;
+	Camera trainCamera;
+	Light worldLight;
+	Track track;
 
-
-
+	GameObject root;
 	Camera* mainCamera;
 	Light* mainLight;
-	Camera worldCamera;
-	Light worldLight;
-	Mesh testm;
-	GameObject a;
-	GameObject b;
-	Track track;
-	GameObject root;
 	bool isLine;
 	unsigned int effectMode;
 	float runTime;

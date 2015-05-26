@@ -47,6 +47,10 @@ private slots:
 
 	void on_actionChang_sky_triggered();
 
+	void on_actionTrainView_triggered();
+
+	void on_horizontalSlider_valueChanged(int value);
+
 private:
 	Ui::MainWindow *ui;
 };
