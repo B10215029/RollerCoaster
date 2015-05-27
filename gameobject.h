@@ -38,7 +38,11 @@ public:
 		AnimRotateZB	= 0x020,
 		AnimCharIdle	= 0x040,
 		AnimCharWalk	= 0x080,
-		AnimRobot		= 0x100
+		AnimRobot		= 0x100,
+		AnimJump1		= 0x200,
+		AnimJump2		= 0x400,
+		AnimJump3		= 0x800,
+		AnimJump4		= 0x1000
 	};
 	enum {BODY,HEAD,HANDUL,HANDUR,HANDDL,HANDDR,FOOTUL,FOOTUR,FOOTDL,FOOTDR,PARTNUM};
 };

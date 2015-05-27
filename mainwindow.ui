@@ -133,6 +133,70 @@
             <string>Kaleidoscope</string>
            </property>
           </item>
+          <item>
+           <property name="text">
+            <string>Toon</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Negative</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Gray</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Dith</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_2">
+          <item>
+           <property name="text">
+            <string>Train 1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 3.1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 3.2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 3.3</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 4.1</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 4.2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Train 5</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>

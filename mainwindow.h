@@ -51,6 +51,8 @@ private slots:
 
 	void on_horizontalSlider_valueChanged(int value);
 
+	void on_comboBox_2_activated(int index);
+
 private:
 	Ui::MainWindow *ui;
 };

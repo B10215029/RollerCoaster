@@ -139,4 +139,16 @@ void GameObject::animation(float t){
 		children[0]->children[3]->children[0]->rotation = vec3(angles[FOOTDL],30,0);
 		children[0]->children[4]->children[0]->rotation = vec3(angles[FOOTDR],-30,0);
 	}
+	if(animationType & AnimJump1){
+		position.y() = linerFunc(t, 0,0,0.0 ,0,4,0.1, 4,0,0.1, 0,0,0.6);
+	}
+	if(animationType & AnimJump2){
+		position.y() = linerFunc(t, 0,0,0.2 ,0,4,0.1, 4,0,0.1, 0,0,0.4);
+	}
+	if(animationType & AnimJump3){
+		position.y() = linerFunc(t, 0,0,0.4 ,0,4,0.1, 4,0,0.1, 0,0,0.2);
+	}
+	if(animationType & AnimJump4){
+		position.y() = linerFunc(t, 0,0,0.6 ,0,4,0.1, 4,0,0.1, 0,0,0.0);
+	}
 }

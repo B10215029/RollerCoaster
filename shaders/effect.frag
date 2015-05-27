@@ -336,9 +336,28 @@ void main(){
 		vFragColor = texture2D( tex, texC );
 	}
 	else if(mode==19){
-		vFragColor = vec4(0,0,0,1);
+		vec3 tC = texture2D(tex, texcoord).rgb*3;
+		vFragColor = vec4(floor(tC.r+1)/3.0,floor(tC.g+1)/3.0,floor(tC.b+1)/3.0,1);
 	}
 	else if(mode==20){
+		vFragColor = texture2D(tex, texcoord);
+		vFragColor = vec4(1-vFragColor.x, 1-vFragColor.y, 1-vFragColor.z, vFragColor.w);
+	}
+	else if(mode==21){
+		vFragColor = texture2D(tex, texcoord);
+		float gray = 0.2126 * vFragColor.r + 0.7152 * vFragColor.g + 0.0722 * vFragColor.b;
+		vFragColor = vec4(gray, gray, gray, vFragColor.w);
+	}
+	else if(mode==22){
+		vFragColor = texture2D(tex, texcoord);
+		float gray = 0.2126 * vFragColor.r + 0.7152 * vFragColor.g + 0.0722 * vFragColor.b;
+		gray = floor(gray * float(2));
+		vFragColor = vec4(gray, gray, gray, vFragColor.w);
+	}
+	else if(mode==23){
+		vFragColor = vec4(0,0,0,1);
+	}
+	else if(mode==24){
 		vFragColor = vec4(1,1,1,1);
 	}
 }

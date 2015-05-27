@@ -32,29 +32,105 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
 	worldLight.setFrustum(-100, 100, -100, 100, -1000, 1000);
 //set sence
-	root.mesh = new Mesh(":/models/floor.obj");
+	root.mesh = new Mesh(":/models/model/terrain/floor.obj");
+	root.setChild(new GameObject());
+	root.children[0]->mesh = new Mesh(":/models/model/terrain/house/renaissanceTownHouse.obj");
+	root.children[0]->position = vec3(-450,0,0);
+	root.children[0]->rotation = vec3(0,-90,0);
+	root.children[0]->scale = vec3(50,50,50);
+
+	root.setChild(new GameObject());
+	root.children[1]->mesh = new Mesh(":/models/model/terrain/house/LowpolyHouse.obj");
+	root.children[1]->position = vec3(-300,0,-400);
+	root.children[1]->scale = vec3(25,25,25);
+	root.setChild(new GameObject());
+	root.children[2]->mesh = new Mesh(":/models/model/terrain/Tree1.obj");
+	root.children[2]->position = vec3(-350,0,-400);
+	root.children[2]->scale = vec3(20,20,20);
+
+	for(int i=0;i<6;++i){
+		root.setChild(new GameObject());
+		root.children[3+i*2]->mesh = root.children[1]->mesh;
+		root.children[3+i*2]->position = vec3(-200+i*100,0,-400);
+		root.children[3+i*2]->scale = vec3(25,25,25);
+		root.setChild(new GameObject());
+		root.children[4+i*2]->mesh = root.children[2]->mesh;
+		root.children[4+i*2]->position = vec3(-250+i*100,0,-400);
+		root.children[4+i*2]->scale = vec3(20,20,20);
+	}
 //set track
 	root.setChild(&track);
 	track.name = "Track";
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/car.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/TRAIN1.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/BlendSwapTrain.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/car.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal1.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal2.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal3.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/TRAIN1.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/TRAIN2.obj"));
+	track.trainModel.push_back(new Mesh(":/models/model/train/BlendSwapTrain.obj"));
 //set train
 	track.addTrain();
-	track.setTrain(0, 0, 0);
 	track.addTrain();
-	track.setTrain(1, 100, 50);
+	track.addTrain();
+	track.addTrain();
+	track.addTrain();
+	track.addTrain();
+	track.addTrain();
+	track.addTrain();
+	track.setTrain(0, 0, 300);
+	track.setTrain(1, 100, 325);
+	track.setTrain(2, 1, 250);
+	track.setTrain(3, 2, 231.25);
+	track.setTrain(4, 3, 212.5);
+	track.setTrain(5, 4, 100);
+	track.setTrain(6, 5, 66.5);
+	track.setTrain(7, 6, 0);
 //set train 1 passenger 1
 	track.trains[0]->setChild(new GameObject());
-	track.trains[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/67700_renamon_v2_6/Renamon_V2.6.obj");
+	track.trains[0]->children[0]->mesh = new Mesh(":/models/model/Renamon/Renamon_V2.6.obj");
 	track.trains[0]->children[0]->position = vec3(1, 1, -1);
 	track.trains[0]->children[0]->rotation = vec3(0, 180, 0);
 //set train 1 passenger 2
 	track.trains[0]->setChild(new GameObject());
-	track.trains[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
+	track.trains[0]->children[1]->mesh = new Mesh(":/models/model/Deadpool/DeadPool.obj");
 	track.trains[0]->children[1]->position = vec3(1, 1, 3);
 	track.trains[0]->children[1]->rotation = vec3(0, 180, 0);
 	track.trains[0]->children[1]->scale = vec3(0.07f, 0.07f, 0.07f);
+//set train 4 passenger
+	track.trains[3]->setChild(new GameObject());
+	track.trains[3]->children[0]->setChild(new GameObject());
+	track.trains[3]->children[0]->children[0]->mesh = new Mesh(":/models/model/happytree/cuddles/cuddles.obj");
+	track.trains[3]->children[0]->children[0]->animationType = GameObject::AnimJump1;
+	track.trains[3]->children[0]->position = vec3(1, 6, 4);
+	track.trains[3]->children[0]->rotation = vec3(0, -90, 0);
+	track.trains[3]->children[0]->scale = vec3(0.2f,0.2f,0.2f);
+	track.trains[3]->setChild(new GameObject());
+	track.trains[3]->children[1]->setChild(new GameObject());
+	track.trains[3]->children[1]->children[0]->mesh = new Mesh(":/models/model/happytree/flippy/flippy.obj");
+	track.trains[3]->children[1]->children[0]->animationType = GameObject::AnimJump3;
+	track.trains[3]->children[1]->position = vec3(-1, 6, 1.33);
+	track.trains[3]->children[1]->rotation = vec3(0, -90, 0);
+	track.trains[3]->children[1]->scale = vec3(0.2f,0.2f,0.2f);
+	track.trains[3]->setChild(new GameObject());
+	track.trains[3]->children[2]->setChild(new GameObject());
+	track.trains[3]->children[2]->children[0]->mesh = new Mesh(":/models/model/happytree/giggles/giggles.obj");
+	track.trains[3]->children[2]->children[0]->animationType = GameObject::AnimJump2;
+	track.trains[3]->children[2]->position = vec3(1, 6, -1.33);
+	track.trains[3]->children[2]->rotation = vec3(0, -90, 0);
+	track.trains[3]->children[2]->scale = vec3(0.2f,0.2f,0.2f);
+	track.trains[3]->setChild(new GameObject());
+	track.trains[3]->children[3]->setChild(new GameObject());
+	track.trains[3]->children[3]->children[0]->mesh = new Mesh(":/models/model/happytree/nutty/nutty.obj");
+	track.trains[3]->children[3]->children[0]->animationType = GameObject::AnimJump4;
+	track.trains[3]->children[3]->position = vec3(-1, 6, -4);
+	track.trains[3]->children[3]->rotation = vec3(0, -90, 0);
+	track.trains[3]->children[3]->scale = vec3(0.2f,0.2f,0.2f);
+//set train 5 passenger
+	track.trains[4]->setChild(new GameObject());
+	track.trains[4]->children[0]->mesh = new Mesh(":/models/model/happytree/Lumpy/Lumpy.obj");
+	track.trains[4]->children[0]->position = vec3(0, 6, 0);
+	track.trains[4]->children[0]->rotation = vec3(0, 180, 0);
+	track.trains[4]->children[0]->scale = vec3(0.02f, 0.02f, 0.02f);
 }
 
 RollerCoasterView::~RollerCoasterView(){
@@ -359,12 +435,14 @@ void RollerCoasterView::initProgram(int program){
 		skyBoxProgram = loadShaders(":/shaders/skyBox.vert",":/shaders/skyBox.frag");
 		glUseProgram(skyBoxProgram);
 		uSkyBoxMVPMatrix = glGetUniformLocation(skyBoxProgram, "MVPMatrix");
-		skyBoxMesh.loadOBJ("C:/Users/Delin/Desktop/skybox.obj");
+		skyBoxMesh.loadOBJ(":/models/model/SkyBox/skybox.obj");
 		nowSkyTexture = 0;
-		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky1.jpg"));
-		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky2.jpg"));
-		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky3.jpg"));
-		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/sky4.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky1.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky2.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky3.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky4.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky5.jpg"));
+		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky6.jpg"));
 		break;
 	}
 }
