@@ -288,6 +288,8 @@ void RollerCoasterView::resizeGL(int w, int h){
 	worldCamera.aspect = (float)width/height;
 	worldCamera.left=-worldCamera.top*width/height;
 	worldCamera.right=worldCamera.top*width/height;
+	trainCamera.left=-trainCamera.top*width/height;
+	trainCamera.right=trainCamera.top*width/height;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, effectFBO);
 	glDeleteTextures(1, &effectTexture);
@@ -493,7 +495,6 @@ void RollerCoasterView::drawProgram(int program){
 	case progSkyBox:
 		glUseProgram(skyBoxProgram);
 		glUniformMatrix4fv(uSkyBoxMVPMatrix, 1, GL_FALSE, mainCamera->skyViewMat().data);
-//		glUniformMatrix4fv(uSkyBoxMVPMatrix, 1, GL_FALSE, (mainCamera->view()*mainCamera->projectionMat()).data);
 		for(int i=0;i<skyBoxMesh.materials.size();++i){
 			glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*skyBoxMesh.faces[i].size()*3*3, skyBoxMesh.mtlFV[i], GL_STATIC_DRAW);
