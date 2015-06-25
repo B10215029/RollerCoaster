@@ -226,14 +226,16 @@ Transform Track::getCurvePosition(float t, int sp){
 	int p2 = (sp+controlPoints.size()+0)%controlPoints.size();
 	int p3 = (sp+controlPoints.size()+1)%controlPoints.size();
 	int p4 = (sp+controlPoints.size()+2)%controlPoints.size();
-	vec3 v;
+	vec3 v,rv;
 	mat4 g,m;
 	vec4 tv(t*t*t, t*t, t, 1);
 	vec4 dtv(3*t*t, 2*t, 1, 0);
 	switch(curveType){
 	case LinearType:
 		v = controlPoints[p3]->position - controlPoints[p2]->position;
+		rv = controlPoints[p3]->rotation - controlPoints[p2]->rotation;
 		r.position = controlPoints[p2]->position + v*t;
+//		r.rotation = controlPoints[p2]->rotation + rv*t;
 		break;
 	case CardinalType:
 		g.data[0] = controlPoints[p1]->position.x();
@@ -276,6 +278,9 @@ Transform Track::getCurvePosition(float t, int sp){
 		v = ((g*m)*dtv).xyz();
 		break;
 	}
+//	r.rotation.x() = DEGREE(atan2(v.z(), v.y()))-90;
+//	r.rotation.y() = DEGREE(acos(v.z()/sqrt(v.x()*v.x()+v.y()*v.y())));
+//	r.rotation.z() = DEGREE(atan2(v.y(), v.x()))-90;
 	r.rotation.x() = DEGREE(asin(v.y()/v.length()))*(v.z()<0?-1:1);
 	r.rotation.y() = (DEGREE(atan(-v.x()/(-v.z())))+(v.z()>0?180:0))*-1;
 	r.rotation.z() = 0;

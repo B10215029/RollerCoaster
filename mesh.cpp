@@ -47,10 +47,13 @@ void Mesh::loadOBJ(const char* filePath){
 				QStringList info = arg[i].split('/');
 				if(info.size() == 1){
 					index.v = info[0].toInt() - 1;
+					index.vt = -1;
+					index.vn = -1;
 				}
 				else if(info.size() == 2){
 					index.v = info[0].toInt() - 1;
 					index.vt = info[1].toInt() - 1;
+					index.vn = -1;
 				}
 				else if(info.size() == 3){
 					index.v = info[0].toInt() - 1;
@@ -149,6 +152,7 @@ void Mesh::update(){
 		mtlFT.push_back(uvArray);
 		float *normalArray=new float[faces[i].size()*3*3];
 		for(int j=0;j<faces[i].size();++j){
+			if(faces[i][j][0].vn<0) continue;
 			normalArray[j*9+0] = normals[faces[i][j][0].vn].x();
 			normalArray[j*9+1] = normals[faces[i][j][0].vn].y();
 			normalArray[j*9+2] = normals[faces[i][j][0].vn].z();

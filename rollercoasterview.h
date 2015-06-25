@@ -96,7 +96,7 @@ private:
 	enum {PositionBuffer, UVBuffer, NormalBuffer, NumBuffers};
 	enum {vPosition, vUV, vNormal};
 //	enum {uModelMatrix, uViewMatrix, uProjectionMatrix, uLightPosition, uEyePosition, uKa, uKd, uKs, uNs, uTex, uUseTexture, NumUniforms};
-	enum {progMain, progShadow, progEffect, progID, progSkyBox};
+	enum {progMain, progShadow, progEffect, progID, progSkyBox, progWater};
 
 	GLuint VAOs[NumVAOs];
 	GLuint Buffers[NumBuffers];
@@ -144,6 +144,13 @@ private:
 	GLuint skyBoxProgram;
 	GLuint uSkyBoxMVPMatrix;
 	Mesh skyBoxMesh;
+
+	GLuint waterProgram;
+	GLuint uWaterMVPMatrix;
+	GLuint uWaterTime;
+	GLuint uWaterLightDirection;
+	GLuint uWaterEyePosition;
+	Mesh waterMesh;
 };
 
 #endif // ROLLERCOASTERVIEW_H

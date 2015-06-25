@@ -12,5 +12,7 @@
         <file alias="drawID.vert">shaders/drawID.vert</file>
         <file alias="skyBox.frag">shaders/skyBox.frag</file>
         <file alias="skyBox.vert">shaders/skyBox.vert</file>
+        <file alias="water.frag">shaders/water.frag</file>
+        <file alias="water.vert">shaders/water.vert</file>
     </qresource>
 </RCC>

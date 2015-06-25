@@ -29,8 +29,8 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	trainCamera.isPerspective = true;
 //set light
 	worldLight.position = vec3(0.0f, 200.0f, 0.0f);
-	//worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
-	worldLight.rotation = vec3(-90.0f, 0.0f, 0.0f);
+	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
+//	worldLight.rotation = vec3(-90.0f, 0.0f, 0.0f);
 	worldLight.setFrustum(-1000, 1000, -1000, 1000, 0, 800);
 //set sence
 	root.mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/floor.obj");
@@ -257,6 +257,8 @@ void RollerCoasterView::initializeGL(){
 	glCullFace(GL_BACK);
 	glClearColor(0.5, 0.5, 1.0, 1.0);
 	//glClearColor(0.0, 0.0, 0.0, 1.0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glGenVertexArrays(NumVAOs, VAOs);
 	glBindVertexArray(VAOs[modelVAO]);
@@ -271,6 +273,7 @@ void RollerCoasterView::initializeGL(){
 	initProgram(progEffect);
 //	initProgram(progID);
 	initProgram(progSkyBox);
+	initProgram(progWater);
 
 	for(int i=0;i<TextureDB::ID.size();++i){
 		glGenTextures(1, &TextureDB::ID[i]);
@@ -318,7 +321,7 @@ void RollerCoasterView::paintGL(){
 //	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(VAOs[modelVAO]);
 //	drawProgram(progMain);
-	drawProgram(progShadow);
+//	drawProgram(progShadow);
 	drawProgram(progEffect);
 //	drawProgram(progID);
 //	drawProgram(progSkyBox);
@@ -504,6 +507,13 @@ void RollerCoasterView::initProgram(int program){
 		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky5.jpg"));
 		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky6.jpg"));
 		break;
+	case progWater:
+		waterProgram = loadShaders(":/shaders/water.vert",":/shaders/water.frag");
+		glUseProgram(waterProgram);
+		uWaterMVPMatrix = glGetUniformLocation(waterProgram, "MVPMatrix");
+		uWaterTime = glGetUniformLocation(waterProgram, "time");
+		waterMesh.loadOBJ("C:/Users/Delin/Desktop/RollerCoaster/model/water.obj");
+		break;
 	}
 }
 
@@ -529,11 +539,12 @@ void RollerCoasterView::drawProgram(int program){
 		glUniform3fv(uMainLightDirection, 1 , mainLight->direction().data);
 		glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
 		drawGameObject(root, uMainModelMatrix, &uMainMtl);
+		drawProgram(progWater);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		glViewport(width*0.75,height*0.75,width/4.,height/4.);
+//		glViewport(width*0.75,height*0.75,width/4.,height/4.);
 		glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glUseProgram(effectProgram);
 		glUniform1i(uEffectMode, effectMode);
@@ -541,8 +552,9 @@ void RollerCoasterView::drawProgram(int program){
 		glUniform2f(uEffectResolution,width,height);
 		glUniform2f(uEffectMouse,(float)mMPX/width,1-(float)mMPY/height);
 		glActiveTexture( GL_TEXTURE0 );
+		glBindTexture(GL_TEXTURE_2D, effectTexture);
 //		glBindTexture(GL_TEXTURE_2D, effectDepthTexture);
-		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+//		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
 		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 		break;
 //	case progID:
@@ -569,6 +581,23 @@ void RollerCoasterView::drawProgram(int program){
 			glDrawArrays(GL_TRIANGLES, 0, skyBoxMesh.faces[i].size()*3);
 		}
 		glClear(GL_DEPTH_BUFFER_BIT);
+		break;
+	case progWater:
+		glUseProgram(waterProgram);
+		glUniformMatrix4fv(uWaterMVPMatrix, 1, GL_FALSE, (mainCamera->view()*mainCamera->projectionMat()).data);
+		glUniform1f(uWaterTime,runTime);
+		for(int i=0;i<waterMesh.materials.size();++i){
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[PositionBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*waterMesh.faces[i].size()*3*3, waterMesh.mtlFV[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+			glBindBuffer(GL_ARRAY_BUFFER, Buffers[UVBuffer]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*waterMesh.faces[i].size()*3*2, waterMesh.mtlFT[i], GL_STATIC_DRAW);
+			glVertexAttribPointer(vUV, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, TextureDB::ID[waterMesh.materials[0].texture]);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDrawArrays(GL_TRIANGLES, 0, waterMesh.faces[i].size()*3);
+		}
 		break;
 	case progShadow:
 		// Time varying light position
