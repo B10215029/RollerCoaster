@@ -103,7 +103,7 @@ void MainWindow::on_pushButton_Add_clicked()
 	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
 		ui->listWidget->insertItem(i+1, QString::number(i+1));
 	ui->openGLWidget->select(ui->openGLWidget->track.controlPoints.size()-1);
-	QSound::play(":/sounds/sounds/add.wav");
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/add.wav");
 }
 
 void MainWindow::on_pushButton_Delete_clicked()
@@ -118,7 +118,7 @@ void MainWindow::on_pushButton_Delete_clicked()
 	for(int i=0;i<ui->openGLWidget->track.controlPoints.size();++i)
 		ui->listWidget->insertItem(i+1, QString::number(i+1));
 	ui->openGLWidget->selectCP = -1;
-	QSound::play(":/sounds/sounds/delete.wav");
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/delete.wav");
 }
 
 void MainWindow::on_comboBox_activated(int index)
@@ -129,7 +129,7 @@ void MainWindow::on_comboBox_activated(int index)
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 {
 	ui->openGLWidget->select(item->text().toInt()-1);
-	QSound::play(":/sounds/sounds/select.wav");
+	QSound::play("C:/Users/Delin/Desktop/RollerCoaster/sounds/select.wav");
 }
 
 void MainWindow::on_actionChang_sky_triggered()

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#define DEPTH_TEXTURE_SIZE 1000
+#define DEPTH_TEXTURE_SIZE 1024
 
 RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	TextureDB::init();
@@ -28,23 +28,24 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
 	trainCamera.isPerspective = true;
 //set light
-	worldLight.position = vec3(0.0f, 100.0f, 0.0f);
-	worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
-	worldLight.setFrustum(-100, 100, -100, 100, -1000, 1000);
+	worldLight.position = vec3(0.0f, 200.0f, 0.0f);
+	//worldLight.rotation = vec3(-45.0f, 45.0f, 0.0f);
+	worldLight.rotation = vec3(-90.0f, 0.0f, 0.0f);
+	worldLight.setFrustum(-1000, 1000, -1000, 1000, 0, 800);
 //set sence
-	root.mesh = new Mesh(":/models/model/terrain/floor.obj");
+	root.mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/floor.obj");
 	root.setChild(new GameObject());
-	root.children[0]->mesh = new Mesh(":/models/model/terrain/house/renaissanceTownHouse.obj");
+	root.children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/house/renaissanceTownHouse.obj");
 	root.children[0]->position = vec3(-450,0,0);
 	root.children[0]->rotation = vec3(0,-90,0);
 	root.children[0]->scale = vec3(50,50,50);
 
 	root.setChild(new GameObject());
-	root.children[1]->mesh = new Mesh(":/models/model/terrain/house/LowpolyHouse.obj");
+	root.children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/house/LowpolyHouse.obj");
 	root.children[1]->position = vec3(-300,0,-400);
 	root.children[1]->scale = vec3(25,25,25);
 	root.setChild(new GameObject());
-	root.children[2]->mesh = new Mesh(":/models/model/terrain/Tree1.obj");
+	root.children[2]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/Tree1.obj");
 	root.children[2]->position = vec3(-350,0,-400);
 	root.children[2]->scale = vec3(20,20,20);
 
@@ -61,13 +62,13 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 //set track
 	root.setChild(&track);
 	track.name = "Track";
-	track.trainModel.push_back(new Mesh(":/models/model/train/car.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal1.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal2.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/ToyTrainFinal3.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/TRAIN1.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/TRAIN2.obj"));
-	track.trainModel.push_back(new Mesh(":/models/model/train/BlendSwapTrain.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/car.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal1.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal2.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal3.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/TRAIN1.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/TRAIN2.obj"));
+	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/BlendSwapTrain.obj"));
 //set train
 	track.addTrain();
 	track.addTrain();
@@ -87,47 +88,47 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	track.setTrain(7, 6, 0);
 //set train 1 passenger 1
 	track.trains[0]->setChild(new GameObject());
-	track.trains[0]->children[0]->mesh = new Mesh(":/models/model/Renamon/Renamon_V2.6.obj");
+	track.trains[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Renamon/Renamon_V2.6.obj");
 	track.trains[0]->children[0]->position = vec3(1, 1, -1);
 	track.trains[0]->children[0]->rotation = vec3(0, 180, 0);
 //set train 1 passenger 2
 	track.trains[0]->setChild(new GameObject());
-	track.trains[0]->children[1]->mesh = new Mesh(":/models/model/Deadpool/DeadPool.obj");
+	track.trains[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
 	track.trains[0]->children[1]->position = vec3(1, 1, 3);
 	track.trains[0]->children[1]->rotation = vec3(0, 180, 0);
 	track.trains[0]->children[1]->scale = vec3(0.07f, 0.07f, 0.07f);
 //set train 4 passenger
 	track.trains[3]->setChild(new GameObject());
 	track.trains[3]->children[0]->setChild(new GameObject());
-	track.trains[3]->children[0]->children[0]->mesh = new Mesh(":/models/model/happytree/cuddles/cuddles.obj");
+	track.trains[3]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/cuddles/cuddles.obj");
 	track.trains[3]->children[0]->children[0]->animationType = GameObject::AnimJump1;
 	track.trains[3]->children[0]->position = vec3(1, 6, 4);
 	track.trains[3]->children[0]->rotation = vec3(0, -90, 0);
 	track.trains[3]->children[0]->scale = vec3(0.2f,0.2f,0.2f);
 	track.trains[3]->setChild(new GameObject());
 	track.trains[3]->children[1]->setChild(new GameObject());
-	track.trains[3]->children[1]->children[0]->mesh = new Mesh(":/models/model/happytree/flippy/flippy.obj");
+	track.trains[3]->children[1]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/flippy/flippy.obj");
 	track.trains[3]->children[1]->children[0]->animationType = GameObject::AnimJump3;
 	track.trains[3]->children[1]->position = vec3(-1, 6, 1.33);
 	track.trains[3]->children[1]->rotation = vec3(0, -90, 0);
 	track.trains[3]->children[1]->scale = vec3(0.2f,0.2f,0.2f);
 	track.trains[3]->setChild(new GameObject());
 	track.trains[3]->children[2]->setChild(new GameObject());
-	track.trains[3]->children[2]->children[0]->mesh = new Mesh(":/models/model/happytree/giggles/giggles.obj");
+	track.trains[3]->children[2]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/giggles/giggles.obj");
 	track.trains[3]->children[2]->children[0]->animationType = GameObject::AnimJump2;
 	track.trains[3]->children[2]->position = vec3(1, 6, -1.33);
 	track.trains[3]->children[2]->rotation = vec3(0, -90, 0);
 	track.trains[3]->children[2]->scale = vec3(0.2f,0.2f,0.2f);
 	track.trains[3]->setChild(new GameObject());
 	track.trains[3]->children[3]->setChild(new GameObject());
-	track.trains[3]->children[3]->children[0]->mesh = new Mesh(":/models/model/happytree/nutty/nutty.obj");
+	track.trains[3]->children[3]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/nutty/nutty.obj");
 	track.trains[3]->children[3]->children[0]->animationType = GameObject::AnimJump4;
 	track.trains[3]->children[3]->position = vec3(-1, 6, -4);
 	track.trains[3]->children[3]->rotation = vec3(0, -90, 0);
 	track.trains[3]->children[3]->scale = vec3(0.2f,0.2f,0.2f);
 //set train 5 passenger
 	track.trains[4]->setChild(new GameObject());
-	track.trains[4]->children[0]->mesh = new Mesh(":/models/model/happytree/Lumpy/Lumpy.obj");
+	track.trains[4]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/Lumpy/Lumpy.obj");
 	track.trains[4]->children[0]->position = vec3(0, 6, 0);
 	track.trains[4]->children[0]->rotation = vec3(0, 180, 0);
 	track.trains[4]->children[0]->scale = vec3(0.02f, 0.02f, 0.02f);
@@ -314,13 +315,51 @@ void RollerCoasterView::resizeGL(int w, int h){
 void RollerCoasterView::paintGL(){
 //	mainCamera->position=track.trains[0]->position;
 //	mainCamera->rotation=track.trains[0]->rotation;
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(VAOs[modelVAO]);
 //	drawProgram(progMain);
-//	drawProgram(progShadow);
+	drawProgram(progShadow);
 	drawProgram(progEffect);
 //	drawProgram(progID);
 //	drawProgram(progSkyBox);
+///////////////////////////////////////////////////
+//	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+////	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+//	glViewport(0, 0, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//	glUseProgram(shadowMapProgram);
+//	mat4 light_view_matrix = mainLight->view();
+//	mat4 light_projection_matrix = mainLight->projectionMat();
+////	glUniformMatrix4fv(uShadowMapVPMatrix,1, GL_FALSE, (light_projection_matrix * light_view_matrix).data);
+//	glUniformMatrix4fv(uShadowMapVPMatrix,1, GL_FALSE, (light_view_matrix * light_projection_matrix).data);
+
+//	glEnable(GL_POLYGON_OFFSET_FILL);
+//	glPolygonOffset(2.0f, 4.0f);
+//	drawGameObject(root, uShadowMapMMatrix);
+//	glDisable(GL_POLYGON_OFFSET_FILL);
+
+////	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+////	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+///////////////////////////////////////////////////
+////	glBindFramebuffer(GL_FRAMEBUFFER, effectFBO);
+////	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+////	drawProgram(progSkyBox);
+////	glUseProgram(mainProgram);
+////	glUniformMatrix4fv(uMainViewMatrix, 1, GL_FALSE, mainCamera->view().data);
+////	glUniformMatrix4fv(uMainProjectionMatrix, 1, GL_FALSE, mainCamera->projectionMat().data);
+////	glUniform3fv(uMainLightDirection, 1 , mainLight->direction().data);
+////	glUniform3fv(uMainEyePosition, 1 , mainCamera->position.data);
+////	drawGameObject(root, uMainModelMatrix, &uMainMtl);
+
+//	glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	glUseProgram(effectProgram);
+//	glActiveTexture( GL_TEXTURE0 );
+////	glBindTexture(GL_TEXTURE_2D, effectDepthTexture);
+//	glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+//	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+//////////////////////////////////////////////////
 	glBindVertexArray(0);
 
 	trainCamera.position = track.trains[0]->position + vec3(0,5,0)*track.trains[0]->rotateMat();
@@ -368,6 +407,25 @@ void RollerCoasterView::initProgram(int program){
 		glUseProgram(shadowMapProgram);
 		uShadowMapMMatrix	 = glGetUniformLocation(shadowMapProgram, "MMatrix");
 		uShadowMapVPMatrix	 = glGetUniformLocation(shadowMapProgram, "VPMatrix");
+
+//		glGenFramebuffers( 1, &shadowMapFBO );
+//		glBindFramebuffer( GL_FRAMEBUFFER, shadowMapFBO );
+////		glGenTextures(1, &effectTexture);
+////		glBindTexture(GL_TEXTURE_2D, effectTexture);
+////		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+////		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+////		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+////		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, effectTexture, 0);
+//		glGenTextures(1, &shadowMapTexture);
+//		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
+//		glTexStorage2D(GL_TEXTURE_2D, 11, GL_DEPTH_COMPONENT32F, 4096, 4096);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+//		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMapTexture, 0);
+//		glBindTexture(GL_TEXTURE_2D, 0);
+//		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 		glGenFramebuffers(1, &shadowMapFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
@@ -437,14 +495,14 @@ void RollerCoasterView::initProgram(int program){
 		skyBoxProgram = loadShaders(":/shaders/skyBox.vert",":/shaders/skyBox.frag");
 		glUseProgram(skyBoxProgram);
 		uSkyBoxMVPMatrix = glGetUniformLocation(skyBoxProgram, "MVPMatrix");
-		skyBoxMesh.loadOBJ(":/models/model/SkyBox/skybox.obj");
+		skyBoxMesh.loadOBJ("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/skybox.obj");
 		nowSkyTexture = 0;
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky1.jpg"));
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky2.jpg"));
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky3.jpg"));
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky4.jpg"));
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky5.jpg"));
-		skyTexture.push_back(TextureDB::addTexture(":/models/model/SkyBox/sky6.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky1.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky2.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky3.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky4.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky5.jpg"));
+		skyTexture.push_back(TextureDB::addTexture("C:/Users/Delin/Desktop/RollerCoaster/model/SkyBox/sky6.jpg"));
 		break;
 	}
 }
@@ -473,15 +531,18 @@ void RollerCoasterView::drawProgram(int program){
 		drawGameObject(root, uMainModelMatrix, &uMainMtl);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+		glViewport(width*0.75,height*0.75,width/4.,height/4.);
 		glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		glUseProgram(effectProgram);
 		glUniform1i(uEffectMode, effectMode);
 		glUniform1f(uEffectTime,runTime);
 		glUniform2f(uEffectResolution,width,height);
 		glUniform2f(uEffectMouse,(float)mMPX/width,1-(float)mMPY/height);
 		glActiveTexture( GL_TEXTURE0 );
-		glBindTexture(GL_TEXTURE_2D, effectTexture);
+//		glBindTexture(GL_TEXTURE_2D, effectDepthTexture);
+		glBindTexture(GL_TEXTURE_2D, shadowMapTexture);
 		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 		break;
 //	case progID:
@@ -528,12 +589,12 @@ void RollerCoasterView::drawProgram(int program){
 		0.0f, 0.5f, 0.0f, 0.5f,
 		0.0f, 0.0f, 0.5f, 0.5f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-		mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
-///		mat4 shadow_matrix = scale_bias_matrix * light_view_matrix * light_projection_matrix;
-///		mat4 shadow_matrix = light_view_matrix * light_projection_matrix * scale_bias_matrix;
-///		mat4 shadow_matrix = light_view_matrix * scale_bias_matrix * light_projection_matrix;
+		mat4 shadow_matrix = scale_bias_matrix * light_view_matrix * light_projection_matrix;
+//		mat4 shadow_matrix = light_view_matrix * scale_bias_matrix * light_projection_matrix;
 //		mat4 shadow_matrix = light_projection_matrix * scale_bias_matrix * light_view_matrix;
+//		mat4 shadow_matrix = light_view_matrix * light_projection_matrix * scale_bias_matrix;
 //		mat4 shadow_matrix = light_projection_matrix * light_view_matrix * scale_bias_matrix;
+//		mat4 shadow_matrix = scale_bias_matrix * light_projection_matrix * light_view_matrix;
 
 		// Now we render from the light’s position into the depth buffer.
 		// Select the appropriate program
@@ -545,8 +606,9 @@ void RollerCoasterView::drawProgram(int program){
 //		glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
 		glViewport(0, 0, DEPTH_TEXTURE_SIZE, DEPTH_TEXTURE_SIZE);
 		// Clear
-		glClearDepth(1.0f);
-		glClear(GL_DEPTH_BUFFER_BIT);
+//		glClearDepth(1.0f);
+//		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Enable polygon offset to resolve depth-fighting isuses
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(2.0f, 4.0f);

@@ -15,8 +15,8 @@
 
 Track::Track():GameObject(){
 	mesh = new Mesh();
-	controlPointMesh.loadOBJ(":/models/controlPoint.obj");
-	selectControlPointMesh.loadOBJ(":/models/controlPoint2.obj");
+	controlPointMesh.loadOBJ("C:/Users/Delin/Desktop/RollerCoaster/model/controlPoint.obj");
+	selectControlPointMesh.loadOBJ("C:/Users/Delin/Desktop/RollerCoaster/model/controlPoint2.obj");
 	controlPoints.clear();
 	trains.clear();
 	trackType = TrackType;
@@ -425,16 +425,16 @@ void Track::setTrain(int trainID, int modelID, float pos){
 		trains[trainID]->children[0]->children[0]->children[2]->setChild(new GameObject());
 		trains[trainID]->children[0]->children[0]->children[3]->setChild(new GameObject());
 		trains[trainID]->children[0]->children[0]->children[4]->setChild(new GameObject());
-		trains[trainID]->children[0]->children[0]->mesh = new Mesh(":/models/model/robot/body.obj");
-		trains[trainID]->children[0]->children[0]->children[0]->mesh = new Mesh(":/models/model/robot/head.obj");
-		trains[trainID]->children[0]->children[0]->children[1]->mesh = new Mesh(":/models/model/robot/handUL.obj");
-		trains[trainID]->children[0]->children[0]->children[2]->mesh = new Mesh(":/models/model/robot/handUR.obj");
-		trains[trainID]->children[0]->children[0]->children[1]->children[0]->mesh = new Mesh(":/models/model/robot/handDL.obj");
-		trains[trainID]->children[0]->children[0]->children[2]->children[0]->mesh = new Mesh(":/models/model/robot/handDR.obj");
-		trains[trainID]->children[0]->children[0]->children[3]->mesh = new Mesh(":/models/model/robot/footUL.obj");
-		trains[trainID]->children[0]->children[0]->children[4]->mesh = new Mesh(":/models/model/robot/footUR.obj");
-		trains[trainID]->children[0]->children[0]->children[3]->children[0]->mesh = new Mesh(":/models/model/robot/footDL.obj");
-		trains[trainID]->children[0]->children[0]->children[4]->children[0]->mesh = new Mesh(":/models/model/robot/footDR.obj");
+		trains[trainID]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/body.obj");
+		trains[trainID]->children[0]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/head.obj");
+		trains[trainID]->children[0]->children[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/handUL.obj");
+		trains[trainID]->children[0]->children[0]->children[2]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/handUR.obj");
+		trains[trainID]->children[0]->children[0]->children[1]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/handDL.obj");
+		trains[trainID]->children[0]->children[0]->children[2]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/handDR.obj");
+		trains[trainID]->children[0]->children[0]->children[3]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/footUL.obj");
+		trains[trainID]->children[0]->children[0]->children[4]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/footUR.obj");
+		trains[trainID]->children[0]->children[0]->children[3]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/footDL.obj");
+		trains[trainID]->children[0]->children[0]->children[4]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/robot/footDR.obj");
 		trains[trainID]->children[0]->children[0]->position = vec3(0,0,0);
 		trains[trainID]->children[0]->children[0]->children[0]->position = vec3(0,3.122,-0.809);
 		trains[trainID]->children[0]->children[0]->children[1]->position = vec3(3.093,1.496,0.316);

@@ -22,11 +22,11 @@ void main(void) {
 	//vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 	//pPosition = -vPosition3;
 //	pPosition = (vec4(vPosition,1) * modelView).xyz;
-	pPosition = (vec4(vPosition,1) * modelMatrix).xyz;
+	pPosition = (modelMatrix * vec4(vPosition,1)).xyz;
 	pUV = vUV;
 	//pNormal = normalize((vec4(vNormal,1) * modelView).xyz);
 	pNormal = normalize(mat3(modelMatrix) * vNormal);
 	//pLightDirection = normalize(lightPosition - vPosition3);
-	pShadowCoord = shadowMatrix * vec4(pPosition, 1);
+	pShadowCoord = shadowMatrix * (modelMatrix * vec4(vPosition,1));
 	gl_Position = MVP * vec4(vPosition, 1);
 }
