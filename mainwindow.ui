@@ -70,12 +70,12 @@
           </item>
           <item>
            <property name="text">
-            <string>Displacement</string>
+            <string>Rain</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>Patterns</string>
+            <string>Snow</string>
            </property>
           </item>
           <item>

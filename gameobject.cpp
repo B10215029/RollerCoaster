@@ -151,4 +151,13 @@ void GameObject::animation(float t){
 	if(animationType & AnimJump4){
 		position.y() = linerFunc(t, 0,0,0.6 ,0,4,0.1, 4,0,0.1, 0,0,0.0);
 	}
+	if(animationType & AnimSmoke){
+		for(int i=0;i<children.size();++i){
+			float s = linerFunc(t+(float)i/children.size()*2.0+(sin((float)i)*9999-(int)(sin((float)i)*9999))*2.0, 0,50,1.8);
+			children[i]->position.x() = sin(6.28/children.size()*i)*5;
+			children[i]->position.y() = pow(s,1.5f)/5;
+			children[i]->position.z() = s+cos(6.28/children.size()*i)*5;
+			children[i]->scale = vec3(s/10.0+1);
+		}
+	}
 }

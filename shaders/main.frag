@@ -15,11 +15,11 @@ out vec4 fragColor;
 
 void main(void){
 	vec3 ambient = Ka;
-	vec3 diffuse = Kd;
+	vec4 texcolor = vec4(Kd, 1);
 	if(useTexture != -1)
-		diffuse = texture2D(tex, pUV).rgb;
-	diffuse = diffuse * max(dot(normalize(pNormal), normalize(lightDirection)), 0);
+		texcolor = texture2D(tex, pUV);
+	vec3 diffuse = texcolor.rgb * max(dot(normalize(pNormal), normalize(lightDirection)), 0);
 	vec3 halfv = normalize(normalize(lightDirection) + normalize(eyePosition-pPosition));
 	vec3 specular = Ks * pow(max(dot(pNormal, halfv), 0), Ns);
-	fragColor = vec4(ambient + diffuse + specular, 1);
+	fragColor = vec4(ambient + diffuse + specular, texcolor.a);
 }

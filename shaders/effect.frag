@@ -79,21 +79,26 @@ void main(){
 		p.x = p.x + sin(p.y*80.+time*6.)*0.03;
 		vFragColor = texture2D(tex, p);
 	}
-	else if(mode==6){//Displacement
-		vec2 p = texcoord;
-		vec4 color = texture2D(tex, p);
-		p.x += color.r * 0.1 * sin(time);
-		float brightness = fract(p.x*10);
-		vFragColor.rgb = vec3(brightness);
-		vFragColor.a = 1.;
+	else if(mode==6){//rain
+		vFragColor = texture2D( tex, texcoord );
+		float rx = texcoord.x*resolution.x/resolution.y;
+		vec2 texC;
+		texC.x = floor(rx * float(100)) / float(100);
+		texC.y = fract(random(texC.x)-time*2);
+		float l = texcoord.y-texC.y;
+		if(0<l&&l<0.1&&length(rx-texC.x)<0.002)
+			vFragColor = vFragColor+(vec4(0,0,1,1)-vFragColor)*(1-l*10)*(1-l*10);
 	}
-	else if(mode==7){//Patterns
-		vec2 p = texcoord;
-		float size = 0.1;
-		p.x = mod(p.x, size);
-		p.x = abs(p.x - size/2.);
-		p.x = abs(mod(p.x + time/6., 2.)-1.);
-		vFragColor = texture2D(tex, p);
+	else if(mode==7){//snow
+		vFragColor = texture2D( tex, texcoord );
+		vec2 rc = texcoord;
+		rc.x = texcoord.x*resolution.x/resolution.y;
+		vec2 texC;
+		texC.x = floor(rc.x * float(30)) / float(30)+0.01;
+		texC.y = fract(random(texC.x)-time/2);
+		float l = length(rc-texC);
+		if(l<0.01)
+			vFragColor = vFragColor+(vec4(1)-vFragColor)*(1-l*100);
 	}
 	else if(mode==8){//fog
 		vec2 p = texcoord * 6.;

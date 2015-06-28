@@ -42,7 +42,8 @@ public:
 		AnimJump1		= 0x200,
 		AnimJump2		= 0x400,
 		AnimJump3		= 0x800,
-		AnimJump4		= 0x1000
+		AnimJump4		= 0x1000,
+		AnimSmoke		= 0x2000
 	};
 	enum {BODY,HEAD,HANDUL,HANDUR,HANDDL,HANDDR,FOOTUL,FOOTUR,FOOTDL,FOOTDR,PARTNUM};
 };

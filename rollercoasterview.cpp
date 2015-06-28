@@ -24,8 +24,8 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 //set camera
 	worldCamera.position = vec3(0, 50, 20);
 	worldCamera.rotation = vec3(-45,0,0);
-	worldCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
-	trainCamera.setFrustum(-10, 10 ,-10, 10, -1000, 1000);
+	worldCamera.setFrustum(-10, 10 ,-10, 10, -3000, 3000);
+	trainCamera.setFrustum(-10, 10 ,-10, 10, -3000, 3000);
 	trainCamera.isPerspective = true;
 //set light
 	worldLight.position = vec3(0.0f, 200.0f, 0.0f);
@@ -59,6 +59,19 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 		root.children[4+i*2]->position = vec3(-250+i*100,0,-400);
 		root.children[4+i*2]->scale = vec3(20,20,20);
 	}
+
+	root.setChild(new GameObject());
+	root.children[15]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/terrain/hole.obj");
+	root.children[15]->scale = vec3(20);
+	root.children[15]->position.y() = 50;
+	root.children[15]->position.x() = 400;
+
+	root.setChild(new GameObject());
+	root.children[16]->mesh = root.children[15]->mesh;
+	root.children[16]->scale = vec3(20);
+	root.children[16]->position.y() = 50;
+	root.children[16]->position.x() = 600;
+
 //set track
 	root.setChild(&track);
 	track.name = "Track";
@@ -66,9 +79,7 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal1.obj"));
 	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal2.obj"));
 	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/ToyTrainFinal3.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/TRAIN1.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/TRAIN2.obj"));
-	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/BlendSwapTrain.obj"));
+//	track.trainModel.push_back(new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/train/BlendSwapTrain.obj"));
 //set train
 	track.addTrain();
 	track.addTrain();
@@ -76,28 +87,34 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	track.addTrain();
 	track.addTrain();
 	track.addTrain();
-	track.addTrain();
-	track.addTrain();
-	track.setTrain(0, 0, 300);
-	track.setTrain(1, 100, 325);
+	track.setTrain(0, 0, 0);
+	track.setTrain(1, 100, 100);
 	track.setTrain(2, 1, 250);
 	track.setTrain(3, 2, 231.25);
 	track.setTrain(4, 3, 212.5);
-	track.setTrain(5, 4, 100);
-	track.setTrain(6, 5, 66.5);
-	track.setTrain(7, 6, 0);
-//set train 1 passenger 1
+//	track.setTrain(5, 4, 0);
+//set train 0 passenger 1
 	track.trains[0]->setChild(new GameObject());
 	track.trains[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Renamon/Renamon_V2.6.obj");
 	track.trains[0]->children[0]->position = vec3(1, 1, -1);
 	track.trains[0]->children[0]->rotation = vec3(0, 180, 0);
-//set train 1 passenger 2
+//set train 0 passenger 2
 	track.trains[0]->setChild(new GameObject());
 	track.trains[0]->children[1]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/Deadpool/DeadPool.obj");
 	track.trains[0]->children[1]->position = vec3(1, 1, 3);
 	track.trains[0]->children[1]->rotation = vec3(0, 180, 0);
 	track.trains[0]->children[1]->scale = vec3(0.07f, 0.07f, 0.07f);
-//set train 4 passenger
+//set train 2 passenger
+	track.trains[2]->setChild(new GameObject());
+	track.trains[2]->children[0]->position = vec3(0, 17, -4);
+	track.trains[2]->children[0]->animationType = GameObject::AnimSmoke;
+	Mesh* smokeMesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/smokeball.obj");
+	for(int i=0;i<10;++i){
+		track.trains[2]->children[0]->setChild(new GameObject());
+		track.trains[2]->children[0]->children[i]->mesh = smokeMesh;
+	}
+	track.trains[2]->children[0]->setChild(new GameObject());
+//set train 3 passenger
 	track.trains[3]->setChild(new GameObject());
 	track.trains[3]->children[0]->setChild(new GameObject());
 	track.trains[3]->children[0]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/cuddles/cuddles.obj");
@@ -126,12 +143,18 @@ RollerCoasterView::RollerCoasterView(QWidget *parent) : QOpenGLWidget(parent){
 	track.trains[3]->children[3]->position = vec3(-1, 6, -4);
 	track.trains[3]->children[3]->rotation = vec3(0, -90, 0);
 	track.trains[3]->children[3]->scale = vec3(0.2f,0.2f,0.2f);
-//set train 5 passenger
+//set train 4 passenger
 	track.trains[4]->setChild(new GameObject());
 	track.trains[4]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/happytree/Lumpy/Lumpy.obj");
 	track.trains[4]->children[0]->position = vec3(0, 6, 0);
 	track.trains[4]->children[0]->rotation = vec3(0, 180, 0);
 	track.trains[4]->children[0]->scale = vec3(0.02f, 0.02f, 0.02f);
+//set train 5 passenger
+//	track.trains[5]->setChild(new GameObject());
+//	track.trains[5]->children[0]->mesh = new Mesh("C:/Users/Delin/Desktop/RollerCoaster/model/smokeball.obj");
+//	track.trains[5]->children[0]->position = vec3(0, 15, -13);
+//	track.trains[5]->children[0]->rotation = vec3(0, 180, 0);
+//	track.trains[5]->children[0]->scale = vec3(0.02f, 0.02f, 0.02f);
 }
 
 RollerCoasterView::~RollerCoasterView(){
@@ -278,7 +301,7 @@ void RollerCoasterView::initializeGL(){
 	for(int i=0;i<TextureDB::ID.size();++i){
 		glGenTextures(1, &TextureDB::ID[i]);
 		glBindTexture(GL_TEXTURE_2D, TextureDB::ID[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TextureDB::image[i].width(), TextureDB::image[i].height(), 0, GL_RGB, GL_UNSIGNED_BYTE, TextureDB::image[i].bits());
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TextureDB::image[i].width(), TextureDB::image[i].height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, TextureDB::image[i].bits());
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}

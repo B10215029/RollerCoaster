@@ -16,7 +16,7 @@ void main(void) {
 	mat4 modelView = viewMatrix * modelMatrix;
 	mat4 MVP = projectionMatrix * modelView;
 	//pPosition = (vec4(vPosition,1) * modelView).xyz;
-	pPosition = (vec4(vPosition,1) * modelMatrix).xyz;
+	pPosition = vec3(modelMatrix * vec4(vPosition,1));
 	pUV = vUV;
 	//pNormal = normalize(mat3(modelMatrix) * vNormal);
 	pNormal = normalize(mat3(modelMatrix) * vNormal);
